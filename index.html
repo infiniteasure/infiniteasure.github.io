@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Infinite Asure: an open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
+<meta name="theme-color" content="#061317">
+<meta property="og:title" content="Infinite Asure">
+<meta property="og:description" content="An open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
+<meta property="og:image" content="img/skull.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="img/wheel-icon.png">
+<style>html{color-scheme:dark}img{max-width:100%}</style>
+<title>Infinite Asure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+/* Layout: dusk at the helm. Hero = Skull Peak with a living sea (canvas ship, waves, gulls) and the ship's wheel
+   in the foreground; then a parchment sea chart, the ship's articles on a scroll, the logbook plates, and a wanted poster.
+   One committed night-sea look with parchment surfaces. */
+:root{
+  --abyss:#061317;      /* deep water, page ground */
+  --deep:#0c222a;
+  --deep-2:#123039;
+  --foam:#efe2c8;       /* main text on dark */
+  --mist:#a9b7b1;       /* secondary text on dark */
+  --lagoon:#4fc3b8;     /* the shallows */
+  --lantern:#f2a24a;    /* lamplight, calls to action */
+  --gold:#c9a24a;       /* brass fittings */
+  --parch:#e4cfa2;      /* parchment */
+  --ink:#2b1a0c;        /* ink on parchment */
+  --ink-soft:#6a4a28;
+  --blood:#9b2a20;      /* wax seals, X marks */
+  --line:rgba(239,226,200,.16);
+
+  --f-display:"Pirata One","IM Fell English",Georgia,serif;
+  --f-fell:"IM Fell English",Georgia,"Times New Roman",serif;
+  --f-sc:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --f-body:"Alegreya",Georgia,"Times New Roman",serif;
+
+  --gutter:clamp(16px,4vw,48px);
+  --sr:0deg;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--abyss);color:var(--foam);font-family:var(--f-body);font-size:1.08rem;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit}
+:focus-visible{outline:2px solid var(--lantern);outline-offset:3px;border-radius:3px}
+.wrap{max-width:1200px;margin-inline:auto;padding-inline:var(--gutter)}
+.label{font-family:var(--f-sc);font-size:1rem;letter-spacing:.14em;color:var(--lantern)}
+
+/* rope divider */
+.rope{height:11px;border-radius:6px;margin-inline:var(--gutter);
+  background:repeating-linear-gradient(-58deg,#8a6236 0 5px,#b3864f 5px 8px,#5c3d1f 8px 11px);
+  box-shadow:inset 0 -2px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.4)}
+
+/* ---------- nav ---------- */
+.nav{position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:6}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:18px;flex-wrap:wrap}
+.mark{font-family:var(--f-display);font-size:1.7rem;line-height:1;text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark img{width:32px;height:32px;flex:none;transform:rotate(var(--sr))}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:clamp(14px,3vw,30px);flex-wrap:wrap}
+.nav ul a{font-family:var(--f-sc);font-size:1.02rem;letter-spacing:.1em;text-decoration:none;opacity:.88}
+.nav ul a:hover{opacity:1;color:var(--lantern)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;isolation:isolate;padding-block:clamp(110px,12vw,150px) clamp(250px,26vw,330px)}
+.hero-img{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:50% 30%;max-width:none;animation:drift 50s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1.05)}to{transform:scale(1.14) translate(-1.5%,1%)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;
+  background:
+    linear-gradient(90deg,rgba(6,19,23,.82) 0%,rgba(6,19,23,.45) 45%,rgba(6,19,23,0) 75%),
+    linear-gradient(180deg,rgba(6,19,23,.75) 0%,rgba(6,19,23,0) 25%,rgba(6,19,23,0) 60%,rgba(6,19,23,.35) 80%)}
+#sea,#ship{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;max-width:none}
+.helm-big{position:absolute;z-index:0;right:clamp(-220px,-11vw,-70px);top:clamp(60px,7vw,100px);width:clamp(300px,46vw,660px);aspect-ratio:1;max-width:none;pointer-events:none;transform:rotate(var(--sr));filter:drop-shadow(0 40px 50px rgba(0,0,0,.75)) drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.helm-big .sway{width:100%;height:100%;animation:sway 8s ease-in-out infinite alternate}
+.helm-big img{width:100%;height:100%;display:block;max-width:none;filter:brightness(.92) contrast(1.05)}
+@keyframes sway{from{transform:rotate(-7deg)}to{transform:rotate(8deg)}}
+.hero .wrap{position:relative;z-index:1}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;font-family:var(--f-sc);font-size:1rem;letter-spacing:.14em;background:rgba(6,19,23,.6);padding:6px 14px;border:1px solid var(--line);border-radius:3px}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lantern);box-shadow:0 0 12px var(--lantern);animation:flick 3s infinite}
+.hero h1{font-family:var(--f-display);font-weight:400;font-size:clamp(3.8rem,11vw,8.6rem);line-height:.82;margin:.12em 0 .18em;letter-spacing:.005em;text-shadow:0 4px 30px rgba(6,19,23,.7)}
+.hero h1 .gilt{display:block;padding-left:.5em;background:linear-gradient(180deg,#fbe2a0 0%,#e0b45a 45%,#a8762c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 18px rgba(6,19,23,.7))}
+.lede{font-family:var(--f-fell);font-style:italic;font-size:clamp(1.2rem,2.3vw,1.6rem);max-width:30ch;line-height:1.35;margin:0 0 30px;text-shadow:0 1px 16px rgba(6,19,23,.9)}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;font-family:var(--f-sc);font-size:1.08rem;letter-spacing:.08em;text-decoration:none;border-radius:3px;border:1px solid transparent;cursor:pointer;transition:transform .2s,background .2s,color .2s,border-color .2s}
+.btn img{width:22px;height:22px;flex:none}
+.btn-primary{background:linear-gradient(180deg,#f6b866,var(--lantern));color:#1d1006;box-shadow:0 6px 20px -6px rgba(242,162,74,.7)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-primary[aria-pressed="true"] img{animation:spin 6s linear infinite}
+.btn-ghost{border-color:var(--line);color:var(--foam);background:rgba(6,19,23,.5)}
+.btn-ghost:hover{border-color:var(--lantern);color:var(--lantern)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.log-strip{border-bottom:1px solid var(--line)}
+.log{margin:0;padding-block:6px 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.log div{padding:12px 16px 0 0;min-width:0}
+.log dt{font-family:var(--f-sc);font-size:.88rem;letter-spacing:.12em;color:var(--mist)}
+.log dd{margin:2px 0 0;font-family:var(--f-fell);font-size:1.18rem}
+@media (max-width:640px){.log{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}.helm-big{opacity:.35;right:-30vw;top:60px;width:85vw}}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(64px,9vw,120px)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(16px,5vw,72px);align-items:end;margin-bottom:clamp(36px,5vw,60px)}
+.head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2.6rem,6vw,4.4rem);line-height:.95;margin:.1em 0 0;text-wrap:balance}
+.head p{margin:0;color:var(--mist);max-width:52ch}
+@media (max-width:800px){.head{grid-template-columns:1fr}}
+
+/* ---------- parchment ---------- */
+.sheet{filter:drop-shadow(0 26px 34px rgba(0,0,0,.65)) drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.parchment{position:relative;color:var(--ink);background-color:var(--parch);
+  background-image:
+    radial-gradient(ellipse at 50% 45%,rgba(255,248,225,.6),rgba(255,248,225,0) 62%),
+    radial-gradient(ellipse at 0% 0%,rgba(110,62,18,.45),rgba(110,62,18,0) 38%),
+    radial-gradient(ellipse at 100% 0%,rgba(110,62,18,.35),rgba(110,62,18,0) 34%),
+    radial-gradient(ellipse at 100% 100%,rgba(110,62,18,.5),rgba(110,62,18,0) 42%),
+    radial-gradient(ellipse at 0% 100%,rgba(110,62,18,.4),rgba(110,62,18,0) 36%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .33  0 0 0 0 .2  0 0 0 0 .08  0 0 0 .28 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  clip-path:polygon(0% 1.6%,5% 0%,13% .9%,24% .2%,36% 1%,49% 0%,61% 1.1%,74% .2%,86% 1%,95% 0%,100% 1.8%,99.3% 18%,100% 37%,99.1% 58%,100% 79%,99.4% 97.6%,95% 100%,82% 99%,68% 100%,54% 99.1%,40% 100%,26% 99%,12% 100%,1% 98.6%,0% 81%,.8% 60%,0% 39%,.9% 19%)}
+.parchment ::selection{background:rgba(155,42,32,.3)}
+
+/* ---------- sea chart ---------- */
+.chart-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:start}
+@media (max-width:900px){.chart-layout{grid-template-columns:1fr}}
+.chart{padding:clamp(16px,2.6vw,30px)}
+.chart-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin-bottom:12px}
+.chart-head strong{font-family:var(--f-display);font-weight:400;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1}
+.chart-head span{font-family:var(--f-fell);font-style:italic;color:var(--ink-soft)}
+.map{position:relative;aspect-ratio:1200/544;max-width:100%;border:2px solid var(--ink);outline:1px solid var(--ink-soft);outline-offset:4px;overflow:hidden}
+.map img{display:block;width:100%;height:100%;object-fit:cover;filter:sepia(.4) saturate(.85) contrast(1.06)}
+.map svg.overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.route{fill:none;stroke:var(--blood);stroke-width:4;stroke-dasharray:14 12;stroke-linecap:round;animation:march 1.6s linear infinite}
+@keyframes march{to{stroke-dashoffset:-26}}
+.treasure-label{font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:26px;fill:var(--ink);paint-order:stroke;stroke:#efe2c8;stroke-width:5px}
+.compass{position:absolute;right:2.5%;top:6%;width:clamp(56px,11%,110px);aspect-ratio:1}
+.compass .needle{transform-origin:50px 50px;animation:needle 6s ease-in-out infinite alternate}
+@keyframes needle{from{transform:rotate(-6deg)}to{transform:rotate(5deg)}}
+.pin{position:absolute;transform:translate(-50%,-50%);width:clamp(30px,4vw,42px);aspect-ratio:1;border-radius:50%;border:2px solid rgba(43,26,12,.55);cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#d0493d,#8e1f17 70%);color:#f5e6c8;font-family:var(--f-display);font-size:clamp(1rem,1.6vw,1.35rem);line-height:1;display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,.5),inset 0 -3px 4px rgba(0,0,0,.3);transition:transform .2s}
+.pin:hover{transform:translate(-50%,-50%) scale(1.12)}
+.pin[aria-pressed="true"]::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #f5e6c8;animation:ping 1.8s ease-out infinite}
+@keyframes ping{from{transform:scale(.85);opacity:1}to{transform:scale(1.5);opacity:0}}
+.legend{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.legend{grid-template-columns:1fr}.treasure-label{display:none}}
+.legend button{width:100%;text-align:left;background:none;border:0;border-top:1px solid rgba(43,26,12,.35);padding:10px 4px 4px;color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.legend b{font-family:var(--f-display);font-weight:400;font-size:1.3rem;color:var(--blood)}
+.legend span{font-family:var(--f-fell);font-size:1.12rem}
+.legend button[aria-pressed="true"]{border-top:3px solid var(--blood);padding-top:8px}
+.legend button[aria-pressed="true"] span{font-style:italic}
+
+.place{display:grid;gap:16px}
+.place figure{margin:0;position:relative;padding:6px;background:linear-gradient(135deg,#6a4522,#3a2412);border-radius:2px;box-shadow:0 20px 40px -20px rgba(0,0,0,.8)}
+.place figure img{display:block;width:100%;aspect-ratio:1200/544;object-fit:cover;border:1px solid rgba(201,162,74,.6)}
+.place figcaption{position:absolute;left:16px;bottom:14px;font-family:var(--f-sc);letter-spacing:.08em;font-size:.9rem;background:rgba(6,19,23,.78);padding:2px 9px}
+.place .tag{display:flex;align-items:center;gap:12px}
+.seal-sm{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#d0493d,#8e1f17 70%);font-family:var(--f-display);font-size:1.3rem;color:#f5e6c8;flex:none}
+.place h3{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,3.4vw,2.6rem);line-height:1;margin:0}
+.place p{margin:0;max-width:46ch}
+.place .note{font-family:var(--f-fell);font-style:italic;color:var(--lantern);font-size:1.15rem}
+
+/* ---------- articles ---------- */
+.articles-sec{background:var(--deep);background-image:radial-gradient(900px 420px at 15% 0%,rgba(79,195,184,.07),transparent 70%),radial-gradient(900px 500px at 90% 100%,rgba(242,162,74,.06),transparent 70%)}
+.scroll{padding:clamp(28px,6vw,72px) clamp(22px,6vw,80px)}
+.scroll-head{text-align:center;margin-bottom:clamp(24px,4vw,44px)}
+.scroll-head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2.6rem,7vw,5rem);line-height:.95;margin:0}
+.scroll-head p{font-family:var(--f-fell);font-style:italic;font-size:1.2rem;margin:.4em auto 0;max-width:40ch;color:var(--ink-soft)}
+.flourish{display:block;width:min(260px,60%);height:18px;margin:14px auto 0}
+.articles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,64px)}
+@media (max-width:700px){.articles{grid-template-columns:1fr}}
+.articles li{padding:18px 0 20px;border-top:1px solid rgba(43,26,12,.28);min-width:0}
+.articles .ord{font-family:var(--f-sc);letter-spacing:.1em;color:var(--blood);font-size:1rem}
+.articles h3{font-family:var(--f-fell);font-style:italic;font-weight:400;font-size:1.55rem;margin:2px 0 6px;line-height:1.15}
+.articles p{margin:0;max-width:44ch}
+.signed{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;margin-top:clamp(28px,4vw,44px);padding-top:22px;border-top:2px solid rgba(43,26,12,.45)}
+.sigs{display:flex;flex-wrap:wrap;gap:18px 34px}
+.sig{min-width:120px}
+.sig .scrawl{font-family:var(--f-fell);font-style:italic;font-size:1.9rem;line-height:1;border-bottom:1px solid var(--ink);padding:0 8px 4px;transform:rotate(-3deg);display:inline-block}
+.sig small{display:block;font-family:var(--f-sc);letter-spacing:.1em;color:var(--ink-soft);margin-top:6px}
+.wax{width:96px;height:96px;flex:none;border-radius:50%;display:grid;place-items:center;transform:rotate(-12deg);
+  background:radial-gradient(circle at 38% 32%,#c8443a,#8a1c14 58%,#5e100b 100%);
+  box-shadow:0 0 0 5px #8a1c14,0 0 0 7px rgba(94,16,11,.6),3px 6px 10px rgba(0,0,0,.45);
+  font-family:var(--f-display);font-size:2.3rem;color:rgba(245,215,190,.85);text-shadow:0 -1px 0 rgba(0,0,0,.4)}
+
+/* ---------- plates ---------- */
+.plates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.plate{position:relative;padding:5px;border:0;cursor:zoom-in;border-radius:2px;color:var(--foam);text-align:left;background:linear-gradient(135deg,#7a5228,#3a2412);box-shadow:0 18px 30px -18px rgba(0,0,0,.9)}
+.plate .in{display:block;overflow:hidden;border:1px solid rgba(201,162,74,.6)}
+.plate img{display:block;width:100%;height:auto;aspect-ratio:1200/544;object-fit:cover;transition:transform .7s ease}
+.plate:hover img{transform:scale(1.03)}
+.plate span.cap{position:absolute;left:14px;bottom:13px;font-family:var(--f-sc);letter-spacing:.08em;font-size:.88rem;background:rgba(6,19,23,.78);padding:1px 8px}
+.plate:nth-child(1),.plate:nth-child(4){grid-column:1 / -1}
+@media (max-width:700px){.plates{grid-template-columns:1fr}}
+.lightbox{position:fixed;inset:0;z-index:30;background:rgba(3,10,12,.95);display:grid;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 56px) 16px calc(env(safe-area-inset-bottom,0px) + 56px)}
+.lightbox figure{margin:0}
+.lightbox img{max-height:80vh;width:auto;max-width:100%;border:4px solid #5a3a1c}
+.lightbox p{margin:12px 0 0;text-align:center;font-family:var(--f-sc);letter-spacing:.08em}
+.lightbox .close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;background:none;border:1px solid var(--line);color:var(--foam);font-family:var(--f-sc);letter-spacing:.08em;padding:6px 14px;cursor:pointer;border-radius:3px}
+.lightbox .close:hover{border-color:var(--lantern);color:var(--lantern)}
+
+/* ---------- wanted ---------- */
+.wanted{position:relative;overflow:hidden;isolation:isolate}
+.wanted > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;max-width:none}
+.wanted::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,var(--abyss),rgba(6,19,23,.55) 25%,rgba(6,19,23,.6) 75%,var(--abyss))}
+.wanted::after{content:"";position:absolute;z-index:-1;left:50%;top:40%;width:900px;height:700px;max-width:none;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(242,162,74,.28),transparent);animation:flick 4s infinite;pointer-events:none}
+@keyframes flick{0%,100%{opacity:1}12%{opacity:.82}20%{opacity:.95}46%{opacity:.78}60%{opacity:1}78%{opacity:.88}}
+.poster-wrap{max-width:560px;margin-inline:auto;transform:rotate(-1.6deg)}
+.poster{padding:clamp(34px,6vw,56px) clamp(24px,6vw,52px) clamp(30px,5vw,46px);text-align:center}
+.nail{position:absolute;top:16px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d9d2c4,#5d5a55 60%,#2a2826);box-shadow:1px 2px 2px rgba(0,0,0,.5)}
+.nail.l{left:20px}.nail.r{right:20px}
+.poster .big{font-family:var(--f-display);font-size:clamp(4rem,14vw,6.6rem);line-height:.85;margin:0;letter-spacing:.02em}
+.poster .sub{font-family:var(--f-sc);letter-spacing:.14em;font-size:1.05rem;margin:.6em 0 .2em}
+.poster .ship{font-family:var(--f-display);font-size:clamp(2rem,6vw,2.8rem);line-height:1;color:var(--blood);margin:0}
+.poster hr{border:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);height:4px;margin:20px auto;width:70%}
+.poster .reward{font-family:var(--f-fell);font-size:1.3rem;margin:0}
+.poster .reward em{display:block;font-family:var(--f-display);font-style:normal;font-size:2rem;line-height:1.1}
+.poster .fine{font-family:var(--f-fell);font-style:italic;max-width:34ch;margin:16px auto 22px;color:var(--ink-soft)}
+.poster .btn-ink{background:var(--ink);color:var(--parch)}
+.poster .btn-ink:hover{background:var(--blood)}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 20px;flex-wrap:wrap;padding-block:26px}
+footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-size:1rem}
+
+/* ---------- story ---------- */
+.story{position:relative;overflow:hidden;background:radial-gradient(900px 500px at 85% 20%,rgba(79,195,184,.08),transparent 70%),radial-gradient(700px 500px at 10% 90%,rgba(155,42,32,.10),transparent 70%)}
+.story-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(32px,6vw,88px);align-items:start}
+@media (max-width:900px){.story-grid{grid-template-columns:1fr}}
+.story h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);line-height:.95;margin:.15em 0 .5em;text-wrap:balance}
+.tale p{margin:0 0 1.1em;max-width:56ch;font-size:1.14rem}
+.tale p:first-of-type::first-letter{font-family:var(--f-display);float:left;font-size:4.4em;line-height:.8;padding:.06em .1em 0 0;color:var(--lantern)}
+.tale .vow{font-family:var(--f-fell);font-style:italic;font-size:1.35rem;color:var(--foam);border-left:2px solid var(--blood);padding-left:16px}
+.exchange{padding:clamp(26px,4vw,40px) clamp(22px,4vw,40px)}
+.exchange blockquote{margin:0 0 18px}
+.exchange blockquote p{font-family:var(--f-fell);font-style:italic;font-size:clamp(1.35rem,2.4vw,1.75rem);line-height:1.25;margin:0}
+.exchange cite{display:block;margin-top:6px;font-style:normal;font-family:var(--f-sc);letter-spacing:.12em;font-size:.9rem;color:var(--blood)}
+.exchange blockquote.reply p{font-family:var(--f-display);font-style:normal;font-size:clamp(2.2rem,4vw,3rem);line-height:1}
+.asure{margin-top:28px;padding:22px 24px;border:1px solid rgba(79,195,184,.35);background:linear-gradient(180deg,rgba(79,195,184,.08),rgba(79,195,184,.02));border-radius:3px}
+.asure h3{font-family:var(--f-display);font-weight:400;font-size:1.9rem;line-height:1;margin:4px 0 8px;color:var(--lagoon)}
+.asure p{margin:0;color:var(--mist);max-width:46ch}
+.crew-head{margin:clamp(56px,8vw,96px) 0 24px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.crew-head h3{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,4vw,2.8rem);margin:0;line-height:1}
+.crew-head span{font-family:var(--f-fell);font-style:italic;color:var(--mist)}
+.crew{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:900px){.crew{grid-template-columns:1fr}}
+.dossier{position:relative;padding:26px 24px 24px;border:1px solid rgba(201,162,74,.45);border-radius:3px;background:linear-gradient(180deg,rgba(18,48,57,.55),rgba(12,34,42,.35));display:grid;gap:10px;align-content:start;min-width:0}
+.dossier::before{content:"";position:absolute;inset:5px;border:1px solid rgba(201,162,74,.18);pointer-events:none;border-radius:2px}
+.dossier .top{display:flex;align-items:center;gap:14px}
+.monogram{width:54px;height:54px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:1.5rem;color:rgba(245,215,190,.9);background:radial-gradient(circle at 38% 32%,#c8443a,#8a1c14 58%,#5e100b 100%);box-shadow:0 0 0 3px #8a1c14,2px 4px 8px rgba(0,0,0,.45);transform:rotate(-8deg)}
+.dossier .role{font-family:var(--f-sc);letter-spacing:.14em;font-size:.88rem;color:var(--lantern)}
+.dossier h4{font-family:var(--f-display);font-weight:400;font-size:1.9rem;line-height:1;margin:2px 0 0}
+.dossier p{margin:0;color:var(--mist)}
+.dossier .tagline{font-family:var(--f-fell);font-style:italic;color:var(--foam);font-size:1.1rem}
+.dossier.villain{border-color:rgba(155,42,32,.6)}
+.dossier.villain .role{color:#d4574b}
+
+/* ---------- sound control ---------- */
+.helm{position:fixed;z-index:20;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;flex-direction:row-reverse}
+.helm-btn{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:40px;border:1px solid rgba(201,162,74,.55);background:rgba(6,19,23,.88);color:var(--foam);cursor:pointer;font-family:var(--f-sc);letter-spacing:.08em;font-size:1rem;box-shadow:0 10px 30px -8px rgba(0,0,0,.7);backdrop-filter:blur(6px)}
+.helm-btn:hover{border-color:var(--lantern)}
+.helm-wheel{width:40px;height:40px;display:block;transform:rotate(var(--sr))}
+.helm-wheel img{width:100%;height:100%;display:block}
+.helm-btn[aria-pressed="true"] .helm-wheel img{animation:spin 8s linear infinite}
+.mixer{display:flex;gap:14px;align-items:center;padding:8px 14px;border-radius:30px;background:rgba(6,19,23,.88);border:1px solid var(--line);backdrop-filter:blur(6px)}
+.mixer label{display:flex;flex-direction:column;font-family:var(--f-sc);font-size:.8rem;letter-spacing:.08em;color:var(--mist);gap:2px}
+.mixer input{width:96px;accent-color:var(--lantern)}
+@media (max-width:560px){.mixer{display:none}.helm-btn{padding-right:12px}}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero-img,.helm-big .sway,.route,.compass .needle,.pin::after,.eyebrow i,.wanted::after,.helm-btn[aria-pressed="true"] .helm-wheel img,.btn-primary[aria-pressed="true"] img{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Infinite Asure, back to top">
+      <img src="img/wheel-icon.png" alt="" width="32" height="32">
+      Infinite Asure
+    </a>
+    <nav aria-label="Sections"><ul>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#isle">The Isle</a></li>
+      <li><a href="#articles">Gameplay</a></li>
+      <li><a href="#plates">Gallery</a></li>
+      <li><a href="#crew">Join</a></li>
+    </ul></nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" id="hero">
+    <img class="hero-img" src="img/skull.jpg" alt="Skull Peak at dusk, a skull-shaped mountain with glowing eyes above a hillside of palm trees">
+    <canvas id="sea" aria-hidden="true"></canvas>
+    <canvas id="ship" aria-hidden="true"></canvas>
+    <div class="helm-big" aria-hidden="true"><div class="sway"><img src="img/wheel.png" alt=""></div></div>
+    <div class="wrap">
+      <span class="eyebrow"><i></i>A pirate adventure &#xb7; In development</span>
+      <h1>Infinite <span class="gilt">Asure</span></h1>
+      <p class="lede">Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.</p>
+      <div class="ctas" id="hero-ctas">
+        <button class="btn btn-primary" type="button" id="hero-sound" aria-pressed="false">
+          <img src="img/wheel-icon.png" alt="">
+          <span>Play the music</span>
+        </button>
+        <a class="btn btn-ghost" href="#isle">Explore the isle</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="log-strip"><div class="wrap">
+<dl class="log">
+        <div><dt>Genre</dt><dd>Open-world pirate action</dd></div>
+        <div><dt>Engine</dt><dd>Unity</dd></div>
+        <div><dt>Status</dt><dd>In development</dd></div>
+        <div><dt>Release</dt><dd>To be announced</dd></div>
+      </dl>
+  </div></div>
+
+  <section id="story" class="story">
+    <div class="wrap">
+      <div class="story-grid">
+        <div class="tale">
+          <span class="label">The story</span>
+          <h2>Betrayed at sea. Left for dead.</h2>
+          <p>Caribbean, 1717. Aurelius Stalward is a deckhand aboard the <em>Queen Anne&#x2019;s Revenge</em>, and the closest thing Blackbeard has to a son.</p>
+          <p>Then a ship flying their own colours comes alongside, and a dead man walks up the gangplank. Fran&#xe7;ois l&#x2019;Olonnais was hanged by the Spanish. Torn apart in Dari&#xe9;n. Buried a dozen times in a dozen stories. He hasn&#x2019;t aged a day, and he has come for the Asure Chart.</p>
+          <p>By morning the <em>Revenge</em> is gone, and her crew with her. Aurelius has one reason left to live.</p>
+          <p class="vow">&#x201c;If anything happens to him, I will hunt you down. Every port. Every sea.&#x201d;</p>
+        </div>
+        <div>
+          <div class="sheet">
+            <div class="parchment exchange">
+              <span class="label" style="color:var(--blood)">From the prologue</span>
+              <blockquote style="margin-top:14px"><p>&#x201c;That chart leads to waters no man comes back from.&#x201d;</p><cite>Blackbeard</cite></blockquote>
+              <blockquote class="reply"><p>&#x201c;I came back.&#x201d;</p><cite>Fran&#xe7;ois l&#x2019;Olonnais</cite></blockquote>
+            </div>
+          </div>
+          <div class="asure">
+            <span class="label" style="color:var(--lagoon)">Sailors&#x2019; legend</span>
+            <h3>The Asure</h3>
+            <p>Past the last line on every map, sailors say the sea keeps going. Ships that sail into the Asure don&#x2019;t sail out. Almost none.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="crew-head"><h3>Who&#x2019;s who</h3><span>Portraits coming soon</span></div>
+      <div class="crew">
+        <article class="dossier">
+          <div class="top"><span class="monogram" aria-hidden="true">AS</span><div><span class="role">The deckhand</span><h4>Aurelius Stalward</h4></div></div>
+          <p class="tagline">The one who swore revenge.</p>
+          <p>Raised on Blackbeard&#x2019;s deck, quick with a blade and quicker with his mouth. He swore he would hunt l&#x2019;Olonnais across every sea. He meant it.</p>
+        </article>
+        <article class="dossier">
+          <div class="top"><span class="monogram" aria-hidden="true">ET</span><div><span class="role">The captain</span><h4>Blackbeard</h4></div></div>
+          <p class="tagline">Edward Teach. The terror of the Carolinas.</p>
+          <p>The most feared pirate in the Caribbean, with smoke curling from beneath his hat. He knows more about the Asure than he has ever said aloud. Last seen going over the side of his own ship.</p>
+        </article>
+        <article class="dossier villain">
+          <div class="top"><span class="monogram" aria-hidden="true">FL</span><div><span class="role">The dead man</span><h4>Fran&#xe7;ois l&#x2019;Olonnais</h4></div></div>
+          <p class="tagline">Wanted: dead. Again.</p>
+          <p>The cruellest buccaneer who ever lived, and by every account dead since 1669. Nobody knows how he came back from the Asure. He isn&#x2019;t telling.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="rope" aria-hidden="true"></div>
+
+  <section id="isle">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">The sea chart</span><h2>One island. Every kind of trouble.</h2></div>
+        <p>The Isle curls around a sheltered bay like a hook in the sea. Its harbour town crowds the beach, its palms climb the ridge, and something old watches from the peak. Select a mark on the chart.</p>
+      </div>
+
+      <div class="chart-layout">
+        <div class="sheet">
+          <div class="parchment chart">
+            <div class="chart-head"><strong>Chart of the Isle</strong><span>Surveyed in-engine, scale unknown</span></div>
+            <div class="map">
+              <img src="img/island.jpg" alt="Aerial chart of the crescent isle, with the harbour on its inner curve and the peak at its northern end">
+              <svg class="overlay" viewBox="0 0 1200 544" aria-hidden="true">
+                <path class="route" d="M -10 530 C 160 500, 380 470, 520 380 S 640 290, 660 250"/>
+                <path d="M 862 398 L 902 438 M 902 398 L 862 438" stroke="#9b2a20" stroke-width="9" stroke-linecap="round"/>
+                <text class="treasure-label" x="820" y="476">Here be treasure?</text>
+              </svg>
+              <svg class="compass" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="46" fill="rgba(228,207,162,.82)" stroke="#2b1a0c" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#2b1a0c" stroke-width=".8"/>
+                <g class="needle">
+                  <path d="M50 50 L44 44 L50 8 L56 44 Z" fill="#9b2a20"/>
+                  <path d="M50 50 L56 56 L50 92 L44 56 Z" fill="#2b1a0c"/>
+                  <path d="M50 50 L56 44 L92 50 L56 56 Z" fill="#2b1a0c"/>
+                  <path d="M50 50 L44 56 L8 50 L44 44 Z" fill="#2b1a0c"/>
+                  <path d="M50 50 L54 46 L72 28 L54 52 Z M50 50 L46 54 L28 72 L46 48 Z M50 50 L54 54 L72 72 L48 54 Z M50 50 L46 46 L28 28 L52 46 Z" fill="#6a4a28" opacity=".8"/>
+                  <circle cx="50" cy="50" r="3.5" fill="#c9a24a" stroke="#2b1a0c"/>
+                </g>
+              </svg>
+              <button class="pin" type="button" data-place="cove" aria-pressed="true" aria-label="A: The Cove" style="left:55%;top:44%">A</button>
+              <button class="pin" type="button" data-place="peak" aria-pressed="false" aria-label="B: Skull Peak" style="left:36.4%;top:12%">B</button>
+              <button class="pin" type="button" data-place="tavern" aria-pressed="false" aria-label="C: The Tavern" style="left:46.5%;top:31%">C</button>
+            </div>
+            <ul class="legend">
+              <li><button type="button" data-place="cove" aria-pressed="true"><b>A</b><span>The Cove</span></button></li>
+              <li><button type="button" data-place="peak" aria-pressed="false"><b>B</b><span>Skull Peak</span></button></li>
+              <li><button type="button" data-place="tavern" aria-pressed="false"><b>C</b><span>The Tavern</span></button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="place-panel" aria-live="polite">
+          <article class="place" id="place-cove">
+            <figure><img src="img/cabin.jpg" alt="A lamp-lit table inside a weathered beach cabin"><figcaption>A beach cabin in the Cove</figcaption></figure>
+            <div class="tag"><span class="seal-sm" aria-hidden="true">A</span><h3>The Cove</h3></div>
+            <p>Beach cabins and jetties crowd the inner curve of the island. Dock your ship, sell your plunder, and find out who in town is paying for what.</p>
+            <p class="note">Shallow water, safe anchorage, few honest men.</p>
+          </article>
+          <article class="place" id="place-peak" hidden>
+            <figure><img src="img/skull.jpg" alt="Skull Peak with a stone stair climbing toward it"><figcaption>The stair to the peak</figcaption></figure>
+            <div class="tag"><span class="seal-sm" aria-hidden="true">B</span><h3>Skull Peak</h3></div>
+            <p>Past the palms and up the stone stair, a mountain carved into a skull keeps watch over the bay. Light burns behind its eyes. Sailors don't agree on why.</p>
+            <p class="note">Climb at your own risk. Bring a lantern.</p>
+          </article>
+          <article class="place" id="place-tavern" hidden>
+            <figure><img src="img/tavern.jpg" alt="Tavern interior with stools, a table and an iron stove"><figcaption>Inside the tavern</figcaption></figure>
+            <div class="tag"><span class="seal-sm" aria-hidden="true">C</span><h3>The Tavern</h3></div>
+            <p>Sun-split walls, loose floorboards and a stove still warm. Rum flows, rumours spread, and every crew in the Cove passes through that door sooner or later.</p>
+            <p class="note">Mind the floor. Not every board is nailed down.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rope" aria-hidden="true"></div>
+
+  <section id="articles" class="articles-sec">
+    <div class="wrap">
+      <div class="sheet">
+        <div class="parchment scroll">
+          <div class="scroll-head">
+            <span class="label" style="color:var(--blood)">Gameplay</span>
+            <h2>Articles of Agreement</h2>
+            <p>Set down for every hand who sails aboard the Infinite Asure</p>
+            <svg class="flourish" viewBox="0 0 260 18" aria-hidden="true"><path d="M2 9 C 40 -2, 80 20, 120 9 M140 9 C 180 -2, 220 20, 258 9" fill="none" stroke="#2b1a0c" stroke-width="1.6"/><path d="M130 2 L136 9 L130 16 L124 9 Z" fill="#9b2a20"/></svg>
+          </div>
+          <ol class="articles">
+            <li><span class="ord">Article the First</span><h3>Sail free</h3><p>Take the helm and set your own course across open water, reading the wind and the horizon.</p></li>
+            <li><span class="ord">Article the Second</span><h3>Fight at sea</h3><p>Trade broadsides with rival ships, then close in, throw the hooks and board.</p></li>
+            <li><span class="ord">Article the Third</span><h3>Go ashore</h3><p>Run the jetties, climb the cliffs and slip through the Cove on foot, where the ship can't follow.</p></li>
+            <li><span class="ord">Article the Fourth</span><h3>Chase the Asure</h3><p>Follow rumours of the Asure Chart up Skull Peak and into the island's hidden places, toward waters no map will show.</p></li>
+            <li><span class="ord">Article the Fifth</span><h3>Live the life</h3><p>Drink in the taverns, spend your share, and earn a name the whole harbour knows.</p></li>
+            <li><span class="ord">Article the Sixth</span><h3>Never stop</h3><p>Beyond the reef the blue goes on. There is always another island past the next one.</p></li>
+          </ol>
+          <div class="signed">
+            <div class="sigs">
+              <div class="sig"><span class="scrawl">The Captain</span><small>Master of the ship</small></div>
+              <div class="sig"><span class="scrawl">X</span><small>Quartermaster, his mark</small></div>
+              <div class="sig"><span class="scrawl">X</span><small>Bosun, his mark</small></div>
+            </div>
+            <div class="wax" aria-hidden="true">IA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rope" aria-hidden="true"></div>
+
+  <section id="plates">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">The logbook</span><h2>Plates from the voyage</h2></div>
+        <p>Work-in-progress captures taken straight from the editor. Select a plate to see it larger.</p>
+      </div>
+      <div class="plates">
+        <button class="plate" type="button" data-src="img/skull.jpg" data-cap="Plate I &#xb7; Skull Peak at dusk"><span class="in"><img src="img/skull.jpg" alt="Skull Peak at dusk"></span><span class="cap">Plate I &#xb7; Skull Peak</span></button>
+        <button class="plate" type="button" data-src="img/cabin.jpg" data-cap="Plate II &#xb7; A lamp in a beach cabin"><span class="in"><img src="img/cabin.jpg" alt="Lamp-lit table inside a beach cabin"></span><span class="cap">Plate II &#xb7; Beach cabin</span></button>
+        <button class="plate" type="button" data-src="img/tavern.jpg" data-cap="Plate III &#xb7; The tavern"><span class="in"><img src="img/tavern.jpg" alt="Tavern interior with stools and a stove"></span><span class="cap">Plate III &#xb7; Tavern</span></button>
+        <button class="plate" type="button" data-src="img/island.jpg" data-cap="Plate IV &#xb7; The Isle from above"><span class="in"><img src="img/island.jpg" alt="The crescent isle from above"></span><span class="cap">Plate IV &#xb7; The Isle</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wanted" id="crew">
+    <img src="img/tavern.jpg" alt="" aria-hidden="true">
+    <div class="wrap">
+      <div class="poster-wrap">
+        <div class="sheet">
+          <div class="parchment poster">
+            <span class="nail l" aria-hidden="true"></span><span class="nail r" aria-hidden="true"></span>
+            <p class="big">Wanted</p>
+            <p class="sub">Able hands &amp; bold rogues to crew the</p>
+            <p class="ship">Infinite Asure</p>
+            <hr>
+            <p class="reward">Reward<em>A share of every chest</em></p>
+            <p class="fine">No experience at sea required. Must not fear skulls, storms or tavern food. Sailing date to be announced.</p>
+            <a class="btn btn-ink" href="#top">Back to the top</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mark" style="font-size:1.4rem">Infinite Asure</span>
+    <small>In development. Music recorded with the FluidR3 GM soundfont by Frank Wen (CC BY 3.0). Wind and waves are generated live in your browser.</small>
+  </div>
+</footer>
+
+<div class="helm" id="helm">
+  <button class="helm-btn" id="snd" type="button" aria-pressed="false">
+    <span class="helm-wheel" aria-hidden="true"><img src="img/wheel-icon.png" alt=""></span>
+    <span id="snd-label">Play music</span>
+  </button>
+  <div class="mixer" id="mixer" hidden>
+    <label for="vol-music">Shanty<input type="range" id="vol-music" min="0" max="1" step="0.01" value="0.75"></label>
+    <label for="vol-sea">Wind &amp; waves<input type="range" id="vol-sea" min="0" max="1" step="0.01" value="0.45"></label>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Gallery plate">
+  <button class="close" type="button" id="lb-close">Close</button>
+  <figure><img id="lb-img" src="" alt=""><p id="lb-cap"></p></figure>
+</div>
+
+<script>
+/* ---------------- wheel follows the scroll ---------------- */
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root=document.documentElement, ticking=false;
+  addEventListener('scroll',function(){
+    if(ticking) return; ticking=true;
+    requestAnimationFrame(function(){ root.style.setProperty('--sr',(scrollY*0.09)+'deg'); ticking=false; });
+  },{passive:true});
+})();
+
+/* ---------------- living sea: a rendered ocean and a galleon riding its swell ---------------- */
+(function(){
+  var hero=document.getElementById('hero'), cv=document.getElementById('sea'), sc=document.getElementById('ship');
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl=null; try{ gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false}); }catch(e){}
+  var c2=sc.getContext('2d');
+  var W=0,H=0,F=1000,HOR=500,CAM=6.0,gdpr=1,sdpr=1,t0=performance.now(),running=false,raf=0;
+  var NW=14, WAVES=[];
+  for(var i=0;i<NW;i++){ var lam=36*Math.pow(.74,i), th=Math.PI+0.85*Math.sin(i*2.39+.4);
+    WAVES.push({k:6.2831853/lam,lam:lam,amp:lam*(i<3?.021:.028),dx:Math.sin(th),dz:Math.cos(th),ph:i*1.7}); }
+
+  var prog=null, U={};
+  if(gl){
+    var VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    var FS=[
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH','precision highp float;','#else','precision mediump float;','#endif',
+    'uniform vec2 uRes;uniform float uT,uHor,uF,uCam;uniform vec4 uW[14];',
+    'const vec3 SUN=vec3(-0.32,0.05,0.95);const vec3 HZ=vec3(0.47,0.36,0.41);',
+    'vec3 sky(vec3 d){float y=max(d.y,0.);vec3 c=mix(vec3(0.80,0.42,0.34),vec3(0.30,0.17,0.26),smoothstep(0.,.14,y));c=mix(c,vec3(0.07,0.06,0.15),smoothstep(.14,.6,y));',
+    ' float sd=max(dot(d,normalize(SUN)),0.);return c+vec3(1.,.52,.25)*(pow(sd,8.)*.3+pow(sd,70.)*.7);}',
+    'void main(){vec2 fc=gl_FragCoord.xy;float yT=uRes.y-fc.y;float s=uRes.y/900.;',
+    ' vec3 rd=normalize(vec3((fc.x-uRes.x*.5)/uF,(uHor-yT)/uF,1.));',
+    ' if(rd.y>-.0004){float a=exp(-(uHor-yT)/(34.*s))*.9;gl_FragColor=vec4(HZ*a,a);return;}',
+    ' float t=uCam/(-rd.y);vec2 p=rd.xz*t;float fp=t/uF;float h=0.;vec2 g=vec2(0.);',
+    ' for(int i=0;i<14;i++){vec4 w=uW[i];float lam=6.2831853/w.z;float fade=clamp(1.-fp*5./lam,0.,1.);',
+    '  float ph=w.z*dot(w.xy,p)-sqrt(9.81*w.z)*uT+float(i)*1.7;float a=w.w*fade;h+=a*sin(ph);g+=a*w.z*w.xy*cos(ph);}',
+    ' vec3 n=normalize(vec3(-g.x,1.,-g.y));vec3 r=reflect(rd,n);r.y=abs(r.y);',
+    ' float fr=.02+.98*pow(1.-max(dot(n,-rd),0.),5.);',
+    ' vec3 sss=vec3(.015,.10,.095)*clamp(h*.7+.35,0.,1.6);',
+    ' vec3 col=mix(vec3(.004,.028,.036)+sss,sky(r),fr);',
+    ' float sp=max(dot(r,normalize(SUN)),0.);col+=vec3(1.,.6,.3)*(pow(sp,900.)*7.+pow(sp,110.)*.55)*(1.-clamp(fp*.25,0.,.92));',
+    ' col=col/(1.+col*.3);col=pow(col,vec3(1./2.2));',
+    ' col=mix(col,HZ,(1.-exp(-t*.0019))*.92);',
+    ' col=mix(HZ*.9,col,smoothstep(0.,12.*s,yT-uHor));',
+    ' col=mix(col,vec3(.024,.075,.09),smoothstep(uRes.y*.2,0.,fc.y));',
+    ' gl_FragColor=vec4(col,1.);}'].join('\n');
+    function sh(type,src){ var o=gl.createShader(type); gl.shaderSource(o,src); gl.compileShader(o); if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
+    try{
+      prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(prog);
+      if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+      gl.useProgram(prog);
+      var buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+      var ap=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+      ['uRes','uT','uHor','uF','uCam','uW'].forEach(function(n){ U[n]=gl.getUniformLocation(prog,n); });
+      var wa=new Float32Array(NW*4); WAVES.forEach(function(w,i){ wa.set([w.dx,w.dz,w.k,w.amp],i*4); }); gl.uniform4fv(U.uW,wa);
+    }catch(e){ prog=null; }
+  }
+  if(!prog){ sc.hidden=true; return; }
+
+  var img=new Image(), hazed=null, refl=null, SH={ax:239.2,wl:548.5,ppm:12.668,z:210};
+  img.onload=function(){ var w=img.naturalWidth,h=img.naturalHeight;
+    hazed=document.createElement('canvas'); hazed.width=w; hazed.height=h; var x=hazed.getContext('2d');
+    x.drawImage(img,0,0); x.globalCompositeOperation='source-atop'; x.fillStyle='rgba(40,28,44,.16)'; x.fillRect(0,0,w,h); x.fillStyle='rgba(150,100,110,.07)'; x.fillRect(0,0,w,h);
+    refl=document.createElement('canvas'); refl.width=w; refl.height=h; var r=refl.getContext('2d');
+    try{ r.filter='blur(4px)'; }catch(e){} r.drawImage(hazed,0,0); r.globalCompositeOperation='source-atop'; r.fillStyle='rgba(12,20,28,.45)'; r.fillRect(0,0,w,h);
+    if(!running) draw(reduce?0:(performance.now()-t0)/1000);
+  };
+  img.src='img/ship.png';
+
+  function resize(){
+    W=hero.clientWidth; H=hero.clientHeight;
+    F=Math.max(W,780)*.85; var cb=document.getElementById('hero-ctas').getBoundingClientRect(), hb=hero.getBoundingClientRect();
+    HOR=Math.min(H-150,cb.bottom-hb.top+(W<700?120:46));
+    gdpr=Math.min(window.devicePixelRatio||1,1.5); sdpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=Math.round(W*gdpr); cv.height=Math.round(H*gdpr); sc.width=Math.round(W*sdpr); sc.height=Math.round(H*sdpr);
+    gl.viewport(0,0,cv.width,cv.height);
+  }
+  function waveAt(x,z,t){ var h=0,gx=0;
+    for(var i=0;i<NW;i++){ var w=WAVES[i]; if(w.lam<6) continue;
+      var ph=w.k*(w.dx*x+w.dz*z)-Math.sqrt(9.81*w.k)*t+w.ph; h+=w.amp*Math.sin(ph); gx+=w.amp*w.k*w.dx*Math.cos(ph); }
+    return [h,gx]; }
+  function drawShip(t){
+    c2.setTransform(sdpr,0,0,sdpr,0,0); c2.clearRect(0,0,W,H); if(!hazed) return;
+    var ppm=F/SH.z, xm=((W<700?W*.66:W*.61)-W/2)/ppm+Math.sin(t*.045)*6+Math.sin(t*.11)*1.5;
+    var sx=W/2+xm*ppm, wv=waveAt(xm,SH.z,t), wy=HOR+(CAM-wv[0])*ppm;
+    var s=ppm/SH.ppm, ang=-Math.atan(wv[1])*.55+Math.sin(t*.7)*.008;
+    c2.save(); c2.translate(sx,wy); c2.rotate(ang); c2.scale(s,s);
+    c2.save(); c2.beginPath(); c2.rect(-SH.ax-20,0,hazed.width+40,hazed.height); c2.clip();
+    c2.globalAlpha=.2; c2.scale(1,-.5); c2.drawImage(refl,-SH.ax,-SH.wl); c2.restore();
+    c2.drawImage(hazed,-SH.ax,-SH.wl);
+    var g=c2.createLinearGradient(-190,0,215,0); g.addColorStop(0,'rgba(220,215,205,0)'); g.addColorStop(.75,'rgba(220,215,205,.16)'); g.addColorStop(1,'rgba(235,230,220,.38)');
+    c2.fillStyle=g; c2.beginPath(); c2.ellipse(12,1,206,4,0,0,6.2832); c2.fill();
+    c2.restore();
+  }
+  function draw(t){
+    gl.uniform2f(U.uRes,cv.width,cv.height); gl.uniform1f(U.uT,t); gl.uniform1f(U.uHor,HOR*gdpr); gl.uniform1f(U.uF,F*gdpr); gl.uniform1f(U.uCam,CAM);
+    gl.drawArrays(gl.TRIANGLES,0,3); drawShip(t);
+  }
+  function frame(now){ draw((now-t0)/1000); raf=requestAnimationFrame(frame); }
+  function setRun(on){ if(on===running) return; running=on; if(on) raf=requestAnimationFrame(frame); else cancelAnimationFrame(raf); }
+  resize(); draw(0);
+  new ResizeObserver(function(){ resize(); draw(reduce?0:(performance.now()-t0)/1000); }).observe(hero);
+  if(!reduce){
+    new IntersectionObserver(function(es){ setRun(es[0].isIntersecting && !document.hidden); }).observe(hero);
+    document.addEventListener('visibilitychange',function(){ setRun(!document.hidden && hero.getBoundingClientRect().bottom>0); });
+    setRun(true);
+  }
+})();
+
+/* ---------------- sound: the recorded theme, plus wind, waves, gulls and creaking timber ---------------- */
+var Sound=(function(){
+  var ctx,master,musicBus,seaBus,playing=false,timers=[],musicSrc=null,loading=null,LOOP=77.8378;
+  var vol={music:.75,sea:.45};
+  try{ var sv=JSON.parse(localStorage.getItem('ia-vol2')||'null'); if(sv){vol.music=+sv.music;vol.sea=+sv.sea;} }catch(e){}
+  function noise(sec,brown){ var len=Math.floor(ctx.sampleRate*sec), b=ctx.createBuffer(2,len,ctx.sampleRate);
+    for(var c=0;c<2;c++){ var d=b.getChannelData(c), last=0;
+      for(var i=0;i<len;i++){ var w=Math.random()*2-1; if(brown){ last=(last+.02*w)/1.02; d[i]=last*3.5; } else d[i]=w; } }
+    return b; }
+  function creakBuf(){ var sr=ctx.sampleRate, len=Math.floor(sr*(.6+Math.random()*.5)), b=ctx.createBuffer(1,len,sr), d=b.getChannelData(0), pos=0;
+    while(pos<len){ var env=Math.sin(Math.PI*pos/len), f=420+Math.random()*260, ring=Math.floor(sr*.007);
+      for(var i=0;i<ring&&pos+i<len;i++) d[pos+i]+=Math.sin(6.283*f*i/sr)*Math.exp(-i/(sr*.0016))*env*.7;
+      pos+=Math.floor(sr*(.005+.011*Math.abs(Math.sin(pos/len*4.3)))*(.8+Math.random()*.4)); }
+    return b; }
+  function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+  function init(){
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    var comp=ctx.createDynamicsCompressor(); comp.threshold.value=-10; comp.ratio.value=2.5; comp.connect(ctx.destination);
+    master=ctx.createGain(); master.gain.value=0; master.connect(comp);
+    musicBus=ctx.createGain(); musicBus.gain.value=vol.music; musicBus.connect(master);
+    seaBus=ctx.createGain(); seaBus.gain.value=vol.sea; seaBus.connect(master);
+    buildSea();
+  }
+  function loadMusic(){
+    if(!loading) loading=fetch('audio/shanty.mp3').then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.arrayBuffer(); })
+      .then(function(ab){ return new Promise(function(res,rej){ var p=ctx.decodeAudioData(ab,res,rej); if(p&&p.then) p.then(res,rej); }); })
+      .then(function(b){ musicSrc=ctx.createBufferSource(); musicSrc.buffer=b; musicSrc.loop=true; musicSrc.loopStart=0; musicSrc.loopEnd=Math.min(LOOP,b.duration);
+        musicSrc.connect(musicBus); musicSrc.start(ctx.currentTime+.05); });
+    return loading;
+  }
+  var waveVoices=[], wind;
+  function loopSrc(buf,off){ var s=ctx.createBufferSource(); s.buffer=buf; s.loop=true; s.start(0,off||0); return s; }
+  function buildSea(){
+    var brown=noise(9,true), white=noise(7,false);
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380; var g=ctx.createGain(); g.gain.value=.5;
+    loopSrc(brown).connect(lp).connect(g).connect(seaBus);
+    for(var k=0;k<2;k++){
+      var f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=300; f.Q.value=.4;
+      var vg=ctx.createGain(); vg.gain.value=0; var p=ctx.createStereoPanner(); p.pan.value=k?.45:-.45;
+      loopSrc(white,k*3.1).connect(f).connect(vg).connect(p).connect(seaBus); waveVoices.push({f:f,g:vg});
+    }
+    var bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=600; bp.Q.value=1.1; var wg=ctx.createGain(); wg.gain.value=.05;
+    var hp=ctx.createBiquadFilter(); hp.type='bandpass'; hp.frequency.value=1200; hp.Q.value=16; var hg=ctx.createGain(); hg.gain.value=0;
+    var ws=loopSrc(white,1.7); ws.connect(bp).connect(wg).connect(seaBus); ws.connect(hp).connect(hg).connect(seaBus);
+    wind={bp:bp,g:wg,hp:hp,hg:hg};
+  }
+  function wave(v){ if(!playing) return; var t=ctx.currentTime+.05, up=1.6+Math.random()*1.8, dn=2.6+Math.random()*2.6, pk=.16+Math.random()*.22;
+    v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value,t); v.g.gain.linearRampToValueAtTime(pk,t+up); v.g.gain.linearRampToValueAtTime(.015,t+up+dn);
+    v.f.frequency.cancelScheduledValues(t); v.f.frequency.setValueAtTime(Math.max(200,v.f.frequency.value),t);
+    v.f.frequency.exponentialRampToValueAtTime(1100+Math.random()*1600,t+up); v.f.frequency.exponentialRampToValueAtTime(260,t+up+dn);
+    later(function(){wave(v);},(up+dn*.65)*1000+Math.random()*1600); }
+  function gust(){ if(!playing) return; var t=ctx.currentTime+.05, d=3+Math.random()*4, f=320+Math.random()*800;
+    wind.bp.frequency.setTargetAtTime(f,t,d/3); wind.g.gain.setTargetAtTime(.025+Math.random()*.06,t,d/3);
+    wind.hp.frequency.setTargetAtTime(f*2.1,t,d/3); wind.hg.gain.setTargetAtTime(Math.random()<.35?.012+Math.random()*.012:0,t,d/3);
+    later(gust,d*1000); }
+  function gull(){ if(!playing) return; var t=ctx.currentTime+.05, n=2+Math.floor(Math.random()*3), pan=Math.random()*1.6-.8, base=1250+Math.random()*350;
+    for(var i=0;i<n;i++){ var s=t+i*(.36+Math.random()*.12), o=ctx.createOscillator(), g=ctx.createGain(), f=ctx.createBiquadFilter(), p=ctx.createStereoPanner();
+      o.type='triangle'; o.frequency.setValueAtTime(base,s); o.frequency.exponentialRampToValueAtTime(base*1.7,s+.07); o.frequency.exponentialRampToValueAtTime(base*1.1,s+.3);
+      f.type='bandpass'; f.frequency.value=2000; f.Q.value=1.5; p.pan.value=pan;
+      g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(.035,s+.03); g.gain.exponentialRampToValueAtTime(.001,s+.33);
+      o.connect(f).connect(g).connect(p).connect(seaBus); o.start(s); o.stop(s+.36); }
+    later(gull,15000+Math.random()*20000); }
+  function creak(){ if(!playing) return; var s=ctx.createBufferSource(); s.buffer=creakBuf(); s.playbackRate.value=.7+Math.random()*.45;
+    var f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=1600; var g=ctx.createGain(); g.gain.value=.2+Math.random()*.1;
+    var p=ctx.createStereoPanner(); p.pan.value=Math.random()*1.2-.6;
+    s.connect(f).connect(g).connect(p).connect(seaBus); s.start(ctx.currentTime+.05);
+    later(creak,7000+Math.random()*11000); }
+  function startLoops(){ waveVoices.forEach(function(v,i){ later(function(){wave(v);},i*2300); }); gust(); later(gull,6000); later(creak,3000); }
+  function stopLoops(){ timers.forEach(clearTimeout); timers=[]; }
+  function start(){
+    if(!ctx) init();
+    playing=true;
+    var music=loadMusic();
+    var r=ctx.resume();
+    (r&&r.then?r:Promise.resolve()).then(function(){ if(!playing) return; var n=ctx.currentTime;
+      master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n); master.gain.linearRampToValueAtTime(1,n+1.8); stopLoops(); startLoops(); });
+    return music;
+  }
+  function stop(){
+    playing=false; stopLoops(); var n=ctx.currentTime;
+    master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n); master.gain.linearRampToValueAtTime(0,n+.6);
+    setTimeout(function(){ if(!playing) ctx.suspend(); },700);
+  }
+  document.addEventListener('visibilitychange',function(){ if(!ctx||!playing) return;
+    if(document.hidden){ stopLoops(); ctx.suspend(); } else { ctx.resume().then(function(){ if(playing) startLoops(); }); } });
+  function setVol(k,v){ vol[k]=v; if(ctx){ (k==='music'?musicBus:seaBus).gain.setTargetAtTime(v,ctx.currentTime,.08); }
+    try{ localStorage.setItem('ia-vol2',JSON.stringify(vol)); }catch(e){} }
+  return {start:start,stop:stop,isOn:function(){return playing;},setVol:setVol,vol:vol};
+})();
+
+/* ---------------- sound controls ---------------- */
+(function(){
+  var btn=document.getElementById('snd'), lbl=document.getElementById('snd-label'), mixer=document.getElementById('mixer'),
+      hb=document.getElementById('hero-sound'), hbl=hb.querySelector('span'),
+      vm=document.getElementById('vol-music'), vs=document.getElementById('vol-sea'), busy=false;
+  vm.value=Sound.vol.music; vs.value=Sound.vol.sea;
+  function sync(){ var on=Sound.isOn(); btn.setAttribute('aria-pressed',on); hb.setAttribute('aria-pressed',on);
+    lbl.textContent=on?(busy?'Loading\u2026':'Stop music'):'Play music'; hbl.textContent=on?(busy?'Loading the music\u2026':'Stop the music'):'Play the music'; mixer.hidden=!on; }
+  function toggle(){
+    try{
+      if(Sound.isOn()){ Sound.stop(); busy=false; }
+      else { busy=true; Sound.start().then(function(){ busy=false; sync(); },function(){ busy=false; sync(); lbl.textContent='Music failed to load'; }); }
+    }catch(e){ lbl.textContent='Sound unavailable'; return; }
+    sync();
+  }
+  btn.addEventListener('click',toggle); hb.addEventListener('click',toggle);
+  vm.addEventListener('input',function(){ Sound.setVol('music',+vm.value); });
+  vs.addEventListener('input',function(){ Sound.setVol('sea',+vs.value); });
+})();
+
+/* ---------------- sea chart ---------------- */
+(function(){
+  var ctrls=[].slice.call(document.querySelectorAll('[data-place]')), panel=document.getElementById('place-panel');
+  function select(id,fromUser){
+    ctrls.forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.place===id); });
+    [].forEach.call(document.querySelectorAll('.place'),function(a){ a.hidden=a.id!=='place-'+id; });
+    if(fromUser && innerWidth<=900) panel.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }
+  ctrls.forEach(function(b){ b.addEventListener('click',function(){ select(b.dataset.place,true); }); });
+})();
+
+/* ---------------- plates lightbox ---------------- */
+(function(){
+  var lb=document.getElementById('lightbox'),img=document.getElementById('lb-img'),cap=document.getElementById('lb-cap'),closeBtn=document.getElementById('lb-close'),last=null;
+  function open(b){ last=b; img.src=b.dataset.src; img.alt=b.dataset.cap; cap.textContent=b.dataset.cap; lb.hidden=false; closeBtn.focus(); }
+  function close(){ lb.hidden=true; img.src=''; if(last) last.focus(); }
+  [].forEach.call(document.querySelectorAll('.plate'),function(b){ b.addEventListener('click',function(){ open(b); }); });
+  closeBtn.addEventListener('click',close);
+  lb.addEventListener('click',function(e){ if(e.target===lb) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!lb.hidden) close(); });
+})();
+</script>
+</body>
+</html>
