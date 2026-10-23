@@ -6,16 +6,20 @@ The official site for **Infinite Asure**, an open-world pirate game in developme
 
 ## What's on the site
 
-- A live, rendered dusk sea with a galleon riding the swell (WebGL)
-- An original orchestral pirate theme, plus wind and waves generated live in the browser
-- The story, the crew, a clickable sea chart of the Isle and in-engine screenshots
+- A live, rendered dusk sea with a 3D-rendered galleon riding the swell (WebGL)
+- **Take the Helm**: a playable teaser where you steer the galleon and recover fragments of the Asure Chart
+- The story, the crew, the full prologue (read-only), a clickable sea chart of the Isle, a devlog and roadmap, and in-engine screenshots
+- An orchestral main theme and a separate game soundtrack, plus the sound of the sea generated live in the browser
 
 ## Credits
 
-- Game, story and screenshots: Abhay
-- Music: an original composition, performed with the FluidR3 GM soundfont by Frank Wen, used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
-- Fonts: Pirata One, IM Fell English and Alegreya from Google Fonts, under the SIL Open Font License
+- Game, story, prologue and screenshots: Abhay
+- Main theme: an arrangement of the traditional sea shanty "Drunken Sailor" (public domain)
+- Music performed with the FluidR3 GM soundfont by Frank Wen, used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- Fonts: Pirata One, IM Fell English, Alegreya and Courier Prime from Google Fonts, under the SIL Open Font License
+
+The prologue script and all game content are © 2026 Infinite Asure. All rights reserved.
 
 ## Hosting
 
-This is a static site with no build step. Serve the folder as-is (for example with GitHub Pages, from the root of the `main` branch).
+Static site, no build step. Serve the folder as-is (GitHub Pages, root of the `main` branch). All files sit at the top level of the repo.

@@ -3,18 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Infinite Asure: an open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
+<meta name="description" content="An open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
 <meta name="theme-color" content="#061317">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Infinite Asure">
 <meta property="og:title" content="Infinite Asure">
 <meta property="og:description" content="An open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
-<meta property="og:image" content="skull.jpg">
-<meta property="og:type" content="website">
-<link rel="icon" type="image/png" href="wheel-icon.png">
+<meta property="og:url" content="https://infiniteasure.github.io/infinite-asure/">
+<meta property="og:image" content="https://infiniteasure.github.io/infinite-asure/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Infinite Asure">
+<meta name="twitter:description" content="An open-world pirate game in development. Betrayed, left for dead, and sworn to hunt the man who did it, across a sea that has no end.">
+<meta name="twitter:image" content="https://infiniteasure.github.io/infinite-asure/og.jpg">
+<link rel="icon" type="image/svg+xml" href="skull-logo.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" as="image" href="skull.webp">
 <style>html{color-scheme:dark}img{max-width:100%}</style>
 <title>Infinite Asure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Layout: dusk at the helm. Hero = Skull Peak with a living sea (canvas ship, waves, gulls) and the ship's wheel
    in the foreground; then a parchment sea chart, the ship's articles on a scroll, the logbook plates, and a wanted poster.
@@ -45,7 +56,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:76px;scrollbar-color:#6b4a24 #04100f}
 body{margin:0;background:var(--abyss);color:var(--foam);font-family:var(--f-body);font-size:1rem;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 button{font:inherit}
@@ -59,26 +70,50 @@ button{font:inherit}
   box-shadow:inset 0 -2px 2px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.4)}
 
 /* ---------- nav ---------- */
-.nav{position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:6}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:18px;flex-wrap:wrap}
+.nav{position:fixed;top:0;left:0;right:0;z-index:25;padding-top:env(safe-area-inset-top,0px);transition:background .35s,border-color .35s;border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(5,15,18,.95);border-bottom-color:rgba(201,162,74,.22)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:16px;transition:padding .35s}
+.nav.scrolled .wrap{padding-block:10px}
+.nav nav{flex:1;display:flex;justify-content:center}
+.nav-right{display:flex;align-items:center;gap:10px}
 .mark{font-family:var(--f-display);font-size:1.5rem;line-height:1;text-decoration:none;display:flex;align-items:center;gap:10px}
-.mark img{width:32px;height:32px;flex:none;transform:rotate(var(--sr))}
+.mark img{width:38px;height:38px;flex:none}
 .nav ul{list-style:none;margin:0;padding:0;display:flex;gap:clamp(14px,3vw,30px);flex-wrap:wrap}
 .nav ul a{font-family:var(--f-sc);font-size:1.02rem;letter-spacing:.1em;text-decoration:none;opacity:.88}
-.nav ul a:hover{opacity:1;color:var(--lantern)}
+.nav ul a{position:relative;padding:4px 0}
+.nav ul a:hover,.nav ul a[aria-current="true"]{opacity:1;color:var(--lantern)}
+.nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:var(--lantern);transform:scaleX(0);transition:transform .3s}
+.nav ul a:hover::after,.nav ul a[aria-current="true"]::after{transform:scaleX(1)}
+.nav-cta{padding:8px 16px;font-size:.98rem}
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,#8a6526,var(--gold),var(--lantern));transform-origin:left;transform:scaleX(0)}
+.nav-toggle{display:none;width:42px;height:40px;border:1px solid var(--line);border-radius:3px;background:rgba(6,19,23,.6);cursor:pointer;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:0}
+.nav-toggle span{display:block;width:18px;height:2px;background:var(--foam);transition:transform .3s,opacity .3s}
+.nav.open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav.open .nav-toggle span:nth-child(2){opacity:0}
+.nav.open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:1100px){
+  .nav ul{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:#050f12;border-bottom:1px solid rgba(201,162,74,.22);padding:4px var(--gutter) 14px}
+  .nav.open ul{display:flex}
+  .nav.open{background:#050f12}
+  .nav ul a{display:block;padding:13px 0;border-bottom:1px solid var(--line)}
+  .nav ul a::after{display:none}
+  .nav-toggle{display:inline-flex}
+}
+@media (max-width:600px){.nav .nav-cta{display:none}}
+.mark{white-space:nowrap}
 
 /* ---------- hero ---------- */
 .hero{position:relative;overflow:hidden;isolation:isolate;padding-block:clamp(96px,9vw,128px) clamp(220px,21vw,290px)}
-.hero-img{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:50% 30%;max-width:none;animation:drift 50s ease-in-out infinite alternate}
-@keyframes drift{from{transform:scale(1.05)}to{transform:scale(1.14) translate(-1.5%,1%)}}
+.hero-img{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:50% 30%;max-width:none;animation:drift 50s ease-in-out infinite alternate;will-change:transform}
+@keyframes drift{from{transform:scale(1.01)}to{transform:scale(1.06) translate(-.8%,.5%)}}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;
   background:
     linear-gradient(90deg,rgba(6,19,23,.82) 0%,rgba(6,19,23,.45) 45%,rgba(6,19,23,0) 75%),
     linear-gradient(180deg,rgba(6,19,23,.75) 0%,rgba(6,19,23,0) 25%,rgba(6,19,23,0) 60%,rgba(6,19,23,.35) 80%)}
 #sea,#ship{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;max-width:none}
-.helm-big{position:absolute;z-index:0;right:clamp(-220px,-11vw,-70px);top:clamp(60px,6vw,90px);width:clamp(280px,38vw,560px);aspect-ratio:1;max-width:none;pointer-events:none;transform:rotate(var(--sr));filter:drop-shadow(0 40px 50px rgba(0,0,0,.75)) drop-shadow(0 6px 10px rgba(0,0,0,.5))}
-.helm-big .sway{width:100%;height:100%;animation:sway 8s ease-in-out infinite alternate}
-.helm-big img{width:100%;height:100%;display:block;max-width:none;filter:brightness(.92) contrast(1.05)}
+.helm-big{position:absolute;z-index:0;right:clamp(-220px,-11vw,-70px);top:clamp(60px,6vw,90px);width:clamp(280px,38vw,560px);aspect-ratio:1;max-width:none;pointer-events:none;will-change:transform}
+.helm-big .sway{width:100%;height:100%;animation:sway 8s ease-in-out infinite alternate;will-change:transform}
+.helm-big img{width:100%;height:100%;display:block;max-width:none}
 @keyframes sway{from{transform:rotate(-7deg)}to{transform:rotate(8deg)}}
 .hero .wrap{position:relative;z-index:1}
 .eyebrow{display:inline-flex;gap:10px;align-items:center;font-family:var(--f-sc);font-size:1rem;letter-spacing:.14em;background:rgba(6,19,23,.6);padding:6px 14px;border:1px solid var(--line);border-radius:3px}
@@ -104,6 +139,7 @@ button{font:inherit}
 
 /* ---------- sections ---------- */
 section{padding-block:clamp(52px,6.5vw,96px)}
+.story,#isle,.articles-sec,#plates,.devlog,.wanted{content-visibility:auto;contain-intrinsic-size:auto 1100px}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(16px,5vw,72px);align-items:end;margin-bottom:clamp(36px,5vw,60px)}
 .head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2.2rem,4.4vw,3.4rem);line-height:.95;margin:.1em 0 0;text-wrap:balance}
 .head p{margin:0;color:var(--mist);max-width:52ch}
@@ -220,9 +256,6 @@ section{padding-block:clamp(52px,6.5vw,96px)}
 .poster .btn-ink{background:var(--ink);color:var(--parch)}
 .poster .btn-ink:hover{background:var(--blood)}
 
-footer{border-top:1px solid var(--line)}
-footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px 20px;flex-wrap:wrap;padding-block:26px}
-footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-size:1rem}
 
 /* ---------- story ---------- */
 .story{position:relative;overflow:hidden;background:radial-gradient(900px 500px at 85% 20%,rgba(79,195,184,.08),transparent 70%),radial-gradient(700px 500px at 10% 90%,rgba(155,42,32,.10),transparent 70%)}
@@ -256,6 +289,59 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
 .dossier.villain{border-color:rgba(155,42,32,.6)}
 .dossier.villain .role{color:#d4574b}
 
+/* ---------- studio polish ---------- */
+::selection{background:rgba(242,162,74,.35);color:#fff}
+::-webkit-scrollbar{width:11px}
+::-webkit-scrollbar-track{background:#04100f}
+::-webkit-scrollbar-thumb{background:linear-gradient(#8a6236,#5c3d1f);border-radius:6px;border:2px solid #04100f}
+@keyframes rise{from{transform:translateY(26px);opacity:.2;filter:blur(8px)}to{transform:none;opacity:1;filter:none}}
+.hero .eyebrow,.hero h1,.hero .lede,.hero .ctas{animation:rise 1.2s cubic-bezier(.2,.7,.2,1) both}
+.hero h1{animation-delay:.12s}.hero .lede{animation-delay:.32s}.hero .ctas{animation-delay:.48s}
+.scroll-cue{position:absolute;z-index:2;left:50%;bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;font-family:var(--f-sc);letter-spacing:.24em;font-size:.78rem;color:var(--foam);opacity:.8}
+.scroll-cue i{display:block;width:1px;height:38px;background:linear-gradient(180deg,transparent,var(--foam) 50%,transparent);background-size:100% 200%;animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{from{background-position:0 100%}to{background-position:0 -100%}}
+.scroll-cue:hover{opacity:1;color:var(--lantern)}
+/* cinematic banner */
+.banner{position:relative;overflow:hidden;isolation:isolate;padding-block:clamp(90px,13vw,170px) clamp(120px,15vw,200px);
+  background:linear-gradient(180deg,var(--abyss) 0%,#16121f 22%,#3a2233 50%,#93523f 76%,#d08455 84%,#2c1c1e 84.4%,#0c1f25 100%)}
+.banner::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(60% 30% at 30% 78%,rgba(255,190,130,.35),transparent 70%),radial-gradient(40% 18% at 75% 70%,rgba(255,200,160,.12),transparent 70%)}
+.banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16%;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(255,210,170,.08) 0 2px,transparent 2px 9px),linear-gradient(180deg,rgba(12,31,37,0),var(--abyss) 92%)}
+.banner-ship{position:absolute;z-index:0;right:clamp(-40px,4vw,120px);bottom:15.2%;width:clamp(260px,40vw,600px);max-width:none;transform-origin:50% 95%;animation:bob 7s ease-in-out infinite alternate;will-change:transform}
+@keyframes bob{0%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(5px) rotate(.5deg)}100%{transform:translateY(1px) rotate(-.3deg)}}
+.banner .wrap{position:relative;z-index:2}
+.banner blockquote{margin:0}
+.banner blockquote p{font-family:var(--f-display);font-size:clamp(2.8rem,7vw,5.8rem);line-height:.92;margin:0;max-width:9ch;text-wrap:balance;text-shadow:0 6px 40px rgba(10,6,14,.7)}
+.banner cite{display:block;margin-top:18px;font-style:normal;font-family:var(--f-sc);letter-spacing:.2em;color:var(--lantern)}
+@media (max-width:700px){.banner-ship{opacity:.55;right:-60px}}
+/* hover life */
+.dossier{transition:transform .35s,border-color .35s,box-shadow .35s}
+.dossier:hover{transform:translateY(-5px);border-color:rgba(242,162,74,.7);box-shadow:0 24px 40px -24px rgba(0,0,0,.9)}
+.plate::after{content:"View";position:absolute;right:14px;top:13px;font-family:var(--f-sc);letter-spacing:.14em;font-size:.82rem;background:rgba(6,19,23,.78);padding:2px 10px;border:1px solid rgba(201,162,74,.5);opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s}
+.plate:hover::after,.plate:focus-visible::after{opacity:1;transform:none}
+/* lightbox controls */
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:1px solid rgba(201,162,74,.5);background:rgba(6,19,23,.7);color:var(--foam);font-size:1.9rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+.lb-nav:hover{border-color:var(--lantern);color:var(--lantern)}
+.lb-nav.prev{left:clamp(8px,2vw,28px)}.lb-nav.next{right:clamp(8px,2vw,28px)}
+.lb-count{color:var(--mist);margin-right:10px}
+/* poster call to action */
+.poster-ctas{display:flex;flex-direction:column;align-items:center;gap:10px}
+.poster .fine-sm{font-family:var(--f-sc);letter-spacing:.1em;font-size:.86rem;color:var(--ink-soft);margin:0}
+/* studio footer */
+.site-foot{border-top:1px solid rgba(201,162,74,.22);background:linear-gradient(180deg,#04100f,#030b0c)}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:32px;padding-block:clamp(44px,6vw,72px) 32px}
+@media (max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.foot-grid{grid-template-columns:1fr}}
+.foot-grid p{margin:10px 0 0;color:var(--mist);max-width:34ch}
+.foot-grid h4{font-family:var(--f-sc);font-weight:400;letter-spacing:.16em;font-size:.95rem;color:var(--lantern);margin:4px 0 12px}
+.foot-grid ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.foot-grid ul a{text-decoration:none;color:var(--foam);opacity:.85}
+.foot-grid ul a:hover{opacity:1;color:var(--lantern)}
+.foot-credit{font-size:.92rem}
+.foot-bar{display:flex;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;padding-block:18px 26px;border-top:1px solid var(--line)}
+.foot-bar small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-size:.95rem}
+
 /* short laptop screens: keep the hero inside one screen */
 @media (min-width:900px) and (max-height:820px){
   .hero{padding-block:88px 220px}
@@ -263,21 +349,96 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
   .lede{margin-bottom:22px}
   .helm-big{width:clamp(260px,34vw,480px);top:70px}
 }
+/* ---------- read the prologue ---------- */
+.read-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px}
+.read-cta span{font-family:var(--f-fell);font-style:italic;color:var(--mist)}
+.reader{position:fixed;inset:0;z-index:45;background:#04090b;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.reader-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:calc(env(safe-area-inset-top,0px) + 12px) var(--gutter) 12px;border-bottom:1px solid rgba(201,162,74,.25);position:relative}
+.reader-bar strong{display:block;font-family:var(--f-display);font-weight:400;font-size:clamp(1.3rem,2.4vw,1.8rem);line-height:1}
+.reader-meter{position:absolute;left:0;right:0;bottom:-1px;height:2px}
+.reader-meter i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--gold),var(--lantern));transform-origin:left;transform:scaleX(0)}
+.reader-scroll{flex:1;overflow-y:auto;padding:clamp(20px,4vw,48px) var(--gutter) calc(env(safe-area-inset-bottom,0px) + 60px);overscroll-behavior:contain}
+.script{position:relative;max-width:780px;margin:0 auto;padding:clamp(28px,6vw,72px) clamp(20px,6vw,80px);color:#1f160d;
+  background-color:#f1e6cf;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);font-family:"Courier Prime","Courier New",Courier,monospace;font-size:clamp(.9rem,1.6vw,1.02rem);line-height:1.55;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='300'><text x='20' y='170' transform='rotate(-24 210 150)' font-family='Georgia,serif' font-size='22' fill='rgba(120,70,30,0.09)'>&%23169; Infinite Asure &%23183; Do not reproduce</text></svg>")}
+.script .title{text-align:center;margin:0 0 42px}
+.script .title b{display:block;font-family:var(--f-display);font-weight:400;font-size:clamp(2.4rem,6vw,3.6rem);line-height:1;letter-spacing:.02em}
+.script .title span{display:block;margin-top:8px}
+.script .title small{display:block;margin-top:16px;font-size:.85em;opacity:.75}
+.script p{margin:0 0 1em}
+.script .scene{font-weight:700;margin-top:2em}
+.script .center{text-align:center;margin:0 0 .4em}
+.script .trans{text-align:right;font-weight:700}
+.script .cue{margin:1.1em 0 0 38%;}
+.script .par{margin:0 0 0 30%}
+.script .dia{margin:0 18% 1em 18%}
+.script .dia.mid{margin-bottom:0}
+.script .gp{font-size:.86em;background:rgba(155,42,32,.08);border-left:3px solid #9b2a20;padding:8px 12px;margin:0 0 1.2em}
+.script .gp b{letter-spacing:.06em}
+.script .end{text-align:center;font-weight:700;margin-top:2.4em}
+.script .copy{margin-top:3em;padding-top:1em;border-top:1px solid rgba(31,22,13,.25);text-align:center;font-size:.8em;opacity:.7}
+@media (max-width:600px){.script .cue{margin-left:22%}.script .par{margin-left:14%}.script .dia{margin:0 4% 1em 8%}}
+.print-block{display:none}
+@media print{body>*{display:none!important}.print-block{display:block!important;font:16px Georgia,serif;padding:40px;color:#000}}
+/* ---------- devlog ---------- */
+.devlog{background:radial-gradient(800px 400px at 80% 0%,rgba(242,162,74,.06),transparent 70%)}
+.route{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;position:relative}
+.route::before{content:"";position:absolute;left:0;right:0;top:15px;border-top:2px dashed rgba(155,42,32,.55)}
+@media (max-width:980px){.route{grid-template-columns:repeat(2,minmax(0,1fr))}.route::before{display:none}}
+@media (max-width:560px){.route{grid-template-columns:1fr}}
+.leg h3{position:relative;display:flex;align-items:center;gap:10px;font-family:var(--f-sc);font-weight:400;letter-spacing:.14em;font-size:1rem;color:var(--foam);margin:0 0 16px;background:var(--abyss);padding-right:10px;width:max-content;max-width:100%}
+.dot{width:30px;height:30px;border-radius:50%;flex:none;display:inline-block;border:2px solid rgba(201,162,74,.6)}
+.dot.done{background:radial-gradient(circle at 38% 32%,#c8443a,#8a1c14 60%,#5e100b);border-color:#8a1c14}
+.dot.now{background:radial-gradient(circle,#ffd28a,#f2a24a 45%,rgba(242,162,74,.15) 70%);border-color:var(--lantern);animation:flick 2.6s infinite}
+.dot.next{background:rgba(242,162,74,.18);border-color:var(--lantern)}
+.dot.far{background:transparent;border-style:dashed}
+.entry{position:relative;padding:16px 18px;margin-bottom:12px;border:1px solid rgba(201,162,74,.28);border-radius:3px;background:linear-gradient(180deg,rgba(18,48,57,.5),rgba(12,34,42,.3))}
+.entry h4{font-family:var(--f-fell);font-style:italic;font-weight:400;font-size:1.22rem;line-height:1.2;margin:0 0 6px}
+.entry p{margin:0;color:var(--mist);font-size:.96rem}
+.entry .when{display:inline-block;margin-top:10px;font-family:var(--f-sc);letter-spacing:.12em;font-size:.8rem;color:var(--lantern)}
+
+/* ---------- take the helm ---------- */
+.play{padding-bottom:0}
+.game{position:relative;height:clamp(420px,calc(100vh - 84px),700px);overflow:hidden;background:#1b1424;outline:none;border-top:1px solid rgba(201,162,74,.25);border-bottom:1px solid rgba(201,162,74,.25)}
+.game canvas{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block}
+.g-hud{position:absolute;top:14px;left:var(--gutter);display:flex;gap:8px;flex-wrap:wrap;z-index:2;right:var(--gutter)}
+.g-chip{background:rgba(6,19,23,.72);border:1px solid rgba(201,162,74,.35);border-radius:3px;padding:6px 12px}
+.g-chip span{display:block;font-family:var(--f-sc);letter-spacing:.12em;font-size:.72rem;color:var(--mist)}
+.g-chip b{font-family:var(--f-fell);font-weight:400;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.g-wheel{position:absolute;z-index:2;left:50%;bottom:calc(-1 * clamp(105px,13vw,165px));width:clamp(220px,28vw,330px);aspect-ratio:1;max-width:none;transform:translateX(-50%);cursor:grab;touch-action:none}
+.g-wheel:active{cursor:grabbing}
+.g-wheel img{width:100%;height:100%;display:block;max-width:none;pointer-events:none;will-change:transform;-webkit-user-select:none;user-select:none}
+.g-start{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(closest-side,rgba(6,19,23,.6),rgba(6,19,23,.15));text-align:center;padding:0 16px}
+.g-start p{margin:0;font-family:var(--f-sc);letter-spacing:.12em;color:var(--foam);text-shadow:0 2px 10px #000}
+.g-start .btn{font-size:1.25rem;padding:14px 30px}
+.g-toast{position:absolute;z-index:3;left:50%;top:24%;transform:translateX(-50%);width:max-content;max-width:min(560px,88%);text-align:center;font-family:var(--f-fell);font-style:italic;font-size:clamp(1.05rem,2vw,1.35rem);color:var(--foam);background:rgba(6,19,23,.8);border:1px solid rgba(79,195,184,.5);padding:10px 18px;border-radius:3px;box-shadow:0 0 30px rgba(79,195,184,.2)}
+.game.no-gl .g-wheel{display:none}
+.g-sail.on{border-color:var(--lantern);box-shadow:0 0 16px rgba(242,162,74,.35)}
+.g-mute{color:var(--foam);text-align:left;cursor:pointer;font:inherit}
+.g-mute:hover{border-color:var(--lantern)}
+.g-mute[aria-pressed="true"] b{color:var(--mist)}
+.g-sail.on b{color:var(--lantern)}
+.g-boost{display:none;position:absolute;z-index:3;right:var(--gutter);bottom:calc(18px + env(safe-area-inset-bottom,0px));width:76px;height:76px;border-radius:50%;border:2px solid rgba(242,162,74,.8);background:rgba(6,19,23,.78);color:var(--lantern);font-family:var(--f-sc);letter-spacing:.06em;font-size:.86rem;line-height:1.05;touch-action:none;-webkit-user-select:none;user-select:none}
+.g-boost:active{background:rgba(242,162,74,.3)}
+.game.live .g-boost{display:block}
+@media (hover:hover) and (pointer:fine){.game.live .g-boost{display:none}}
+@media (max-width:560px){.g-chip{padding:4px 9px}.g-chip b{font-size:.98rem}.g-toast{top:30%}}
+
 /* ---------- sound control ---------- */
 .helm{position:fixed;z-index:20;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;flex-direction:row-reverse}
-.helm-btn{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:40px;border:1px solid rgba(201,162,74,.55);background:rgba(6,19,23,.88);color:var(--foam);cursor:pointer;font-family:var(--f-sc);letter-spacing:.08em;font-size:1rem;box-shadow:0 10px 30px -8px rgba(0,0,0,.7);backdrop-filter:blur(6px)}
+.helm-btn{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:40px;border:1px solid rgba(201,162,74,.55);background:rgba(6,19,23,.88);color:var(--foam);cursor:pointer;font-family:var(--f-sc);letter-spacing:.08em;font-size:1rem;box-shadow:0 10px 30px -8px rgba(0,0,0,.7)}
 .helm-btn:hover{border-color:var(--lantern)}
-.helm-wheel{width:40px;height:40px;display:block;transform:rotate(var(--sr))}
+.helm-wheel{width:40px;height:40px;display:block}
 .helm-wheel img{width:100%;height:100%;display:block}
 .helm-btn[aria-pressed="true"] .helm-wheel img{animation:spin 8s linear infinite}
-.mixer{display:flex;gap:14px;align-items:center;padding:8px 14px;border-radius:30px;background:rgba(6,19,23,.88);border:1px solid var(--line);backdrop-filter:blur(6px)}
+.mixer{display:flex;gap:14px;align-items:center;padding:8px 14px;border-radius:30px;background:rgba(6,19,23,.88);border:1px solid var(--line)}
 .mixer label{display:flex;flex-direction:column;font-family:var(--f-sc);font-size:.8rem;letter-spacing:.08em;color:var(--mist);gap:2px}
 .mixer input{width:96px;accent-color:var(--lantern)}
 @media (max-width:560px){.mixer{display:none}.helm-btn{padding-right:12px}}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .hero-img,.helm-big .sway,.route,.compass .needle,.pin::after,.eyebrow i,.wanted::after,.helm-btn[aria-pressed="true"] .helm-wheel img,.btn-primary[aria-pressed="true"] img{animation:none!important}
+  .hero-img,.helm-big .sway,.route,.hero .eyebrow,.hero h1,.hero .lede,.hero .ctas,.scroll-cue i,.banner-ship,.compass .needle,.pin::after,.eyebrow i,.wanted::after,.helm-btn[aria-pressed="true"] .helm-wheel img,.btn-primary[aria-pressed="true"] img{animation:none!important}
 }
 </style>
 </head>
@@ -286,25 +447,33 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
 <header class="nav">
   <div class="wrap">
     <a class="mark" href="#top" aria-label="Infinite Asure, back to top">
-      <img src="wheel-icon.png" alt="" width="32" height="32">
+      <img src="skull-logo.svg" alt="" width="34" height="34">
       Infinite Asure
     </a>
-    <nav aria-label="Sections"><ul>
+    <nav aria-label="Sections"><ul id="nav-list">
       <li><a href="#story">Story</a></li>
       <li><a href="#isle">The Isle</a></li>
       <li><a href="#articles">Gameplay</a></li>
+      <li><a href="#play">Play</a></li>
       <li><a href="#plates">Gallery</a></li>
+      <li><a href="#devlog">Devlog</a></li>
       <li><a href="#crew">Join</a></li>
     </ul></nav>
+    <div class="nav-right">
+      <a class="btn btn-primary nav-cta" href="https://www.tiktok.com/@abx4y.exe" target="_blank" rel="noopener">Follow the voyage</a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
   </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
 </header>
+
 
 <main id="top">
   <section class="hero" id="hero">
-    <img class="hero-img" src="skull.jpg" alt="Skull Peak at dusk, a skull-shaped mountain with glowing eyes above a hillside of palm trees">
+    <img class="hero-img" src="skull.webp" alt="Skull Peak at dusk, a skull-shaped mountain with glowing eyes above a hillside of palm trees">
     <canvas id="sea" aria-hidden="true"></canvas>
     <canvas id="ship" aria-hidden="true"></canvas>
-    <div class="helm-big" aria-hidden="true"><div class="sway"><img src="wheel.png" alt=""></div></div>
+    <div class="helm-big" aria-hidden="true"><div class="sway"><img src="wheel.webp" alt=""></div></div>
     <div class="wrap">
       <span class="eyebrow"><i></i>A pirate adventure &#xb7; In development</span>
       <h1>Infinite <span class="gilt">Asure</span></h1>
@@ -314,9 +483,10 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
           <img src="wheel-icon.png" alt="">
           <span>Play the music</span>
         </button>
-        <a class="btn btn-ghost" href="#isle">Explore the isle</a>
+        <a class="btn btn-ghost" href="#play">Take the helm</a>
       </div>
     </div>
+    <a class="scroll-cue" href="#story" aria-label="Scroll to the story"><span>Scroll</span><i></i></a>
   </section>
 
   <div class="log-strip"><div class="wrap">
@@ -338,6 +508,10 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
           <p>Then a ship flying their own colours comes alongside, and a dead man walks up the gangplank. Fran&#xe7;ois l&#x2019;Olonnais was hanged by the Spanish. Torn apart in Dari&#xe9;n. Buried a dozen times in a dozen stories. He hasn&#x2019;t aged a day, and he has come for the Asure Chart.</p>
           <p>By morning the <em>Revenge</em> is gone, and her crew with her. Aurelius has one reason left to live.</p>
           <p class="vow">&#x201c;If anything happens to him, I will hunt you down. Every port. Every sea.&#x201d;</p>
+          <div class="read-cta">
+            <button class="btn btn-primary" type="button" data-read-prologue>Read the prologue</button>
+            <span>The full opening script &#xb7; about 8 minutes &#xb7; contains spoilers</span>
+          </div>
         </div>
         <div>
           <div class="sheet">
@@ -376,7 +550,12 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
     </div>
   </section>
 
-  <div class="rope" aria-hidden="true"></div>
+  <section class="banner" aria-label="A line from the prologue">
+    <img class="banner-ship" src="ship.webp" alt="The galleon under full sail at dusk" loading="lazy" decoding="async">
+    <div class="wrap">
+      <blockquote><p>&#x201c;The sea has no end, boy.&#x201d;</p><cite>Fran&#xe7;ois l&#x2019;Olonnais</cite></blockquote>
+    </div>
+  </section>
 
   <section id="isle">
     <div class="wrap">
@@ -390,7 +569,7 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
           <div class="parchment chart">
             <div class="chart-head"><strong>Chart of the Isle</strong><span>Surveyed in-engine, scale unknown</span></div>
             <div class="map">
-              <img src="island.jpg" alt="Aerial chart of the crescent isle, with the harbour on its inner curve and the peak at its northern end">
+              <img loading="lazy" decoding="async" src="island.webp" alt="Aerial chart of the crescent isle, with the harbour on its inner curve and the peak at its northern end">
               <svg class="overlay" viewBox="0 0 1200 544" aria-hidden="true">
                 <path class="route" d="M -10 530 C 160 500, 380 470, 520 380 S 640 290, 660 250"/>
                 <path d="M 862 398 L 902 438 M 902 398 L 862 438" stroke="#9b2a20" stroke-width="9" stroke-linecap="round"/>
@@ -422,19 +601,19 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
 
         <div id="place-panel" aria-live="polite">
           <article class="place" id="place-cove">
-            <figure><img src="cabin.jpg" alt="A lamp-lit table inside a weathered beach cabin"><figcaption>A beach cabin in the Cove</figcaption></figure>
+            <figure><img loading="lazy" decoding="async" src="cabin.webp" alt="A lamp-lit table inside a weathered beach cabin"><figcaption>A beach cabin in the Cove</figcaption></figure>
             <div class="tag"><span class="seal-sm" aria-hidden="true">A</span><h3>The Cove</h3></div>
             <p>Beach cabins and jetties crowd the inner curve of the island. Dock your ship, sell your plunder, and find out who in town is paying for what.</p>
             <p class="note">Shallow water, safe anchorage, few honest men.</p>
           </article>
           <article class="place" id="place-peak" hidden>
-            <figure><img src="skull.jpg" alt="Skull Peak with a stone stair climbing toward it"><figcaption>The stair to the peak</figcaption></figure>
+            <figure><img loading="lazy" decoding="async" src="skull.webp" alt="Skull Peak with a stone stair climbing toward it"><figcaption>The stair to the peak</figcaption></figure>
             <div class="tag"><span class="seal-sm" aria-hidden="true">B</span><h3>Skull Peak</h3></div>
             <p>Past the palms and up the stone stair, a mountain carved into a skull keeps watch over the bay. Light burns behind its eyes. Sailors don't agree on why.</p>
             <p class="note">Climb at your own risk. Bring a lantern.</p>
           </article>
           <article class="place" id="place-tavern" hidden>
-            <figure><img src="tavern.jpg" alt="Tavern interior with stools, a table and an iron stove"><figcaption>Inside the tavern</figcaption></figure>
+            <figure><img loading="lazy" decoding="async" src="tavern.webp" alt="Tavern interior with stools, a table and an iron stove"><figcaption>Inside the tavern</figcaption></figure>
             <div class="tag"><span class="seal-sm" aria-hidden="true">C</span><h3>The Tavern</h3></div>
             <p>Sun-split walls, loose floorboards and a stove still warm. Rum flows, rumours spread, and every crew in the Cove passes through that door sooner or later.</p>
             <p class="note">Mind the floor. Not every board is nailed down.</p>
@@ -477,6 +656,30 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
     </div>
   </section>
 
+  <section id="play" class="play">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">Playable teaser</span><h2>Take the helm</h2></div>
+        <p>Steer the galleon yourself. Drag the wheel, or use A and D (the arrow keys work too), and hold Shift for full sail. Sail through the glowing bottles to recover five fragments of the Asure Chart.</p>
+      </div>
+    </div>
+    <div class="game" id="game" tabindex="-1" aria-label="Take the helm mini-game">
+      <canvas id="g-sea" aria-hidden="true"></canvas>
+      <canvas id="g-fx" aria-hidden="true"></canvas>
+      <div class="g-hud" aria-live="polite">
+        <div class="g-chip"><span>Chart fragments</span><b id="g-frag">0 / 5</b></div>
+        <div class="g-chip"><span>Heading</span><b id="g-head">N 0&#xb0;</b></div>
+        <div class="g-chip"><span>Speed</span><b id="g-speed">0.0 kn</b></div>
+        <div class="g-chip g-sail"><span>Sails</span><b id="g-sail">Cruising</b></div>
+        <button class="g-chip g-mute" id="g-mute" type="button" aria-pressed="false" aria-label="Game sound"><span>Sound (M)</span><b>On</b></button>
+      </div>
+      <button class="g-boost" id="g-boost" type="button" aria-label="Hold for full sail">Full sail</button>
+      <div class="g-wheel" id="g-wheel" role="slider" aria-label="Ship&#x2019;s wheel" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0" tabindex="0"><img src="wheel.webp" alt="" draggable="false"></div>
+      <div class="g-start" id="g-start"><button class="btn btn-primary" type="button" id="g-go">Take the helm</button><p>Drag the wheel &#xb7; A / D &#xb7; Hold Shift for full sail &#xb7; Sound on</p></div>
+      <div class="g-toast" id="g-toast" hidden></div>
+    </div>
+  </section>
+
   <div class="rope" aria-hidden="true"></div>
 
   <section id="plates">
@@ -486,16 +689,48 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
         <p>Work-in-progress captures taken straight from the editor. Select a plate to see it larger.</p>
       </div>
       <div class="plates">
-        <button class="plate" type="button" data-src="skull.jpg" data-cap="Plate I &#xb7; Skull Peak at dusk"><span class="in"><img src="skull.jpg" alt="Skull Peak at dusk"></span><span class="cap">Plate I &#xb7; Skull Peak</span></button>
-        <button class="plate" type="button" data-src="cabin.jpg" data-cap="Plate II &#xb7; A lamp in a beach cabin"><span class="in"><img src="cabin.jpg" alt="Lamp-lit table inside a beach cabin"></span><span class="cap">Plate II &#xb7; Beach cabin</span></button>
-        <button class="plate" type="button" data-src="tavern.jpg" data-cap="Plate III &#xb7; The tavern"><span class="in"><img src="tavern.jpg" alt="Tavern interior with stools and a stove"></span><span class="cap">Plate III &#xb7; Tavern</span></button>
-        <button class="plate" type="button" data-src="island.jpg" data-cap="Plate IV &#xb7; The Isle from above"><span class="in"><img src="island.jpg" alt="The crescent isle from above"></span><span class="cap">Plate IV &#xb7; The Isle</span></button>
+        <button class="plate" type="button" data-src="skull.webp" data-cap="Plate I &#xb7; Skull Peak at dusk"><span class="in"><img loading="lazy" decoding="async" src="skull.webp" alt="Skull Peak at dusk"></span><span class="cap">Plate I &#xb7; Skull Peak</span></button>
+        <button class="plate" type="button" data-src="cabin.webp" data-cap="Plate II &#xb7; A lamp in a beach cabin"><span class="in"><img loading="lazy" decoding="async" src="cabin.webp" alt="Lamp-lit table inside a beach cabin"></span><span class="cap">Plate II &#xb7; Beach cabin</span></button>
+        <button class="plate" type="button" data-src="tavern.webp" data-cap="Plate III &#xb7; The tavern"><span class="in"><img loading="lazy" decoding="async" src="tavern.webp" alt="Tavern interior with stools and a stove"></span><span class="cap">Plate III &#xb7; Tavern</span></button>
+        <button class="plate" type="button" data-src="island.webp" data-cap="Plate IV &#xb7; The Isle from above"><span class="in"><img loading="lazy" decoding="async" src="island.webp" alt="The crescent isle from above"></span><span class="cap">Plate IV &#xb7; The Isle</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="devlog" class="devlog">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">Devlog &amp; roadmap</span><h2>The voyage so far</h2></div>
+        <p>What&#x2019;s been built, what&#x2019;s on the slipway, and where the course is set next. Plans change at sea, and this chart will too.</p>
+      </div>
+      <div class="route">
+        <div class="leg">
+          <h3><span class="dot done"></span>In the log</h3>
+          <article class="entry"><h4>The Isle takes shape</h4><p>The crescent island, the Cove&#x2019;s harbour town and jetties, and Skull Peak watching over the bay.</p></article>
+          <article class="entry"><h4>Cabins &amp; the tavern</h4><p>Lit, dressed interiors you can walk into: beach cabins and the tavern with its iron stove.</p></article>
+          <article class="entry"><h4>The prologue is written</h4><p>Third draft of <em>Fire on the Water</em>, now readable right here.</p><span class="when">October 2026</span></article>
+          <article class="entry"><h4>The official site sets sail</h4><p>Rendered sea, 3D galleon, an original theme, and the mini-game below the waves.</p><span class="when">October 2026</span></article>
+        </div>
+        <div class="leg">
+          <h3><span class="dot now"></span>On the slipway</h3>
+          <article class="entry"><h4>The first trailer</h4><p>A first look at the Isle and the sea, cut from in-engine footage.</p></article>
+          <article class="entry"><h4>The crew</h4><p>Character models for Aurelius, Blackbeard and l&#x2019;Olonnais.</p></article>
+        </div>
+        <div class="leg">
+          <h3><span class="dot next"></span>Next heading</h3>
+          <article class="entry"><h4>Chapter 1: The Return of the Pirate</h4><p>Aurelius washes up alive, with one name on his mind.</p></article>
+        </div>
+        <div class="leg">
+          <h3><span class="dot far"></span>Beyond the horizon</h3>
+          <article class="entry"><h4>Sailing &amp; naval combat</h4><p>Take the helm for real: broadsides, boarding and the open sea.</p></article>
+          <article class="entry"><h4>The Asure</h4><p>Waters past the edge of every chart. Some things are better left unsaid.</p></article>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="wanted" id="crew">
-    <img src="tavern.jpg" alt="" aria-hidden="true">
+    <img loading="lazy" decoding="async" src="tavern.webp" alt="" aria-hidden="true">
     <div class="wrap">
       <div class="poster-wrap">
         <div class="sheet">
@@ -507,7 +742,10 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
             <hr>
             <p class="reward">Reward<em>A share of every chest</em></p>
             <p class="fine">No experience at sea required. Must not fear skulls, storms or tavern food. Sailing date to be announced.</p>
-            <a class="btn btn-ink" href="#top">Back to the top</a>
+            <div class="poster-ctas">
+              <a class="btn btn-ink" href="https://www.tiktok.com/@abx4y.exe" target="_blank" rel="noopener">Follow the voyage on TikTok</a>
+              <p class="fine-sm">Devlogs and new captures as the game is built</p>
+            </div>
           </div>
         </div>
       </div>
@@ -515,11 +753,26 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
   </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span class="mark" style="font-size:1.4rem">Infinite Asure</span>
-    <small>In development. Music recorded with the FluidR3 GM soundfont by Frank Wen (CC BY 3.0). Wind and waves are generated live in your browser.</small>
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div>
+      <a class="mark" href="#top"><img src="skull-logo.svg" alt="" width="40" height="40">Infinite Asure</a>
+      <p>An open-world pirate adventure in development. Caribbean, 1717. The sea has no end.</p>
+    </div>
+    <nav aria-label="Footer">
+      <h4>Explore</h4>
+      <ul><li><a href="#story">Story</a></li><li><a href="#isle">The Isle</a></li><li><a href="#articles">Gameplay</a></li><li><a href="#play">Take the helm</a></li><li><a href="#plates">Gallery</a></li><li><a href="#devlog">Devlog</a></li><li><a href="#" data-read-prologue>Read the prologue</a></li></ul>
+    </nav>
+    <div>
+      <h4>Follow</h4>
+      <ul><li><a href="https://www.tiktok.com/@abx4y.exe" target="_blank" rel="noopener">TikTok &#xb7; @abx4y.exe</a></li><li><a href="https://abhayxtech.github.io/links" target="_blank" rel="noopener">All links</a></li></ul>
+    </div>
+    <div>
+      <h4>Credits</h4>
+      <p class="foot-credit">Main theme: an arrangement of the traditional sea shanty &#x201c;Drunken Sailor&#x201d;. Music recorded with the FluidR3 GM soundfont by Frank Wen (CC BY 3.0). The sound of the sea is generated live in your browser.</p>
+    </div>
   </div>
+  <div class="wrap foot-bar"><small>&#xa9; 2026 Infinite Asure. All rights reserved.</small><small>Made by Abhay</small></div>
 </footer>
 
 <div class="helm" id="helm">
@@ -529,12 +782,25 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
   </button>
   <div class="mixer" id="mixer" hidden>
     <label for="vol-music">Shanty<input type="range" id="vol-music" min="0" max="1" step="0.01" value="0.75"></label>
-    <label for="vol-sea">Wind &amp; waves<input type="range" id="vol-sea" min="0" max="1" step="0.01" value="0.45"></label>
+    <label for="vol-sea">Waves<input type="range" id="vol-sea" min="0" max="1" step="0.01" value="0.45"></label>
   </div>
 </div>
 
+<div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="reader-title">
+  <div class="reader-bar">
+    <div><span class="label">Infinite Asure</span><strong id="reader-title">Prologue: Fire on the Water</strong></div>
+    <div class="reader-meter" aria-hidden="true"><i id="reader-meter"></i></div>
+    <button class="btn btn-ghost" type="button" id="reader-close">Close</button>
+  </div>
+  <div class="reader-scroll" id="reader-scroll">
+    <article class="script" id="script" aria-live="polite"></article>
+  </div>
+</div>
+<div class="print-block" aria-hidden="true">Printing is disabled for this page. &#xa9; 2026 Infinite Asure.</div>
 <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Gallery plate">
   <button class="close" type="button" id="lb-close">Close</button>
+  <button class="lb-nav prev" type="button" id="lb-prev" aria-label="Previous plate">&#x2039;</button>
+  <button class="lb-nav next" type="button" id="lb-next" aria-label="Next plate">&#x203a;</button>
   <figure><img id="lb-img" src="" alt=""><p id="lb-cap"></p></figure>
 </div>
 
@@ -542,10 +808,10 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
 /* ---------------- wheel follows the scroll ---------------- */
 (function(){
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var root=document.documentElement, ticking=false;
+  var hb=document.querySelector('.helm-big'), ticking=false; if(!hb) return;
   addEventListener('scroll',function(){
     if(ticking) return; ticking=true;
-    requestAnimationFrame(function(){ root.style.setProperty('--sr',(scrollY*0.09)+'deg'); ticking=false; });
+    requestAnimationFrame(function(){ var y=window.scrollY; if(y<innerHeight*1.2) hb.style.transform='rotate('+(y*0.09)+'deg)'; ticking=false; });
   },{passive:true});
 })();
 
@@ -555,7 +821,7 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   var gl=null; try{ gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false}); }catch(e){}
   var c2=sc.getContext('2d');
-  var W=0,H=0,F=1000,HOR=500,CAM=6.0,gdpr=1,sdpr=1,t0=performance.now(),running=false,raf=0;
+  var W=0,H=0,F=1000,HOR=500,CAM=6.0,gdpr=1,sdpr=1,t0=performance.now(),running=false,raf=0,RS=.72,ft=16,lastF=0,adj=0;
   var NW=14, WAVES=[];
   for(var i=0;i<NW;i++){ var lam=36*Math.pow(.74,i), th=Math.PI+0.85*Math.sin(i*2.39+.4);
     WAVES.push({k:6.2831853/lam,lam:lam,amp:lam*(i<3?.021:.028),dx:Math.sin(th),dz:Math.cos(th),ph:i*1.7}); }
@@ -606,13 +872,13 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
     try{ r.filter='blur(4px)'; }catch(e){} r.drawImage(hazed,0,0); r.globalCompositeOperation='source-atop'; r.fillStyle='rgba(12,20,28,.45)'; r.fillRect(0,0,w,h);
     if(!running) draw(reduce?0:(performance.now()-t0)/1000);
   };
-  img.src='ship.png';
+  img.src='ship.webp';
 
   function resize(){
     W=hero.clientWidth; H=hero.clientHeight;
     F=Math.max(W,780)*.85; var cb=document.getElementById('hero-ctas').getBoundingClientRect(), hb=hero.getBoundingClientRect();
     HOR=Math.min(H-150,cb.bottom-hb.top+(W<700?120:46));
-    gdpr=Math.min(window.devicePixelRatio||1,1.5); sdpr=Math.min(window.devicePixelRatio||1,2);
+    gdpr=Math.min(window.devicePixelRatio||1,1)*RS; sdpr=Math.min(window.devicePixelRatio||1,1.5);
     cv.width=Math.round(W*gdpr); cv.height=Math.round(H*gdpr); sc.width=Math.round(W*sdpr); sc.height=Math.round(H*sdpr);
     gl.viewport(0,0,cv.width,cv.height);
   }
@@ -637,8 +903,8 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
     gl.uniform2f(U.uRes,cv.width,cv.height); gl.uniform1f(U.uT,t); gl.uniform1f(U.uHor,HOR*gdpr); gl.uniform1f(U.uF,F*gdpr); gl.uniform1f(U.uCam,CAM);
     gl.drawArrays(gl.TRIANGLES,0,3); drawShip(t);
   }
-  function frame(now){ draw((now-t0)/1000); raf=requestAnimationFrame(frame); }
-  function setRun(on){ if(on===running) return; running=on; if(on) raf=requestAnimationFrame(frame); else cancelAnimationFrame(raf); }
+  function frame(now){ if(lastF){ ft=ft*.92+(now-lastF)*.08; adj++; if(adj>40){ adj=0; if(ft>24&&RS>.42){ RS=Math.max(.42,RS*.84); resize(); } else if(ft<15&&RS<.9){ RS=Math.min(.9,RS*1.08); resize(); } } } lastF=now; draw((now-t0)/1000); raf=requestAnimationFrame(frame); }
+  function setRun(on){ if(on===running) return; running=on; lastF=0; if(on) raf=requestAnimationFrame(frame); else cancelAnimationFrame(raf); }
   resize(); draw(0);
   new ResizeObserver(function(){ resize(); draw(reduce?0:(performance.now()-t0)/1000); }).observe(hero);
   if(!reduce){
@@ -648,9 +914,9 @@ footer small{font-family:var(--f-fell);font-style:italic;color:var(--mist);font-
   }
 })();
 
-/* ---------------- sound: the recorded theme, plus wind, waves, gulls and creaking timber ---------------- */
+/* ---------------- sound: the recorded theme, plus waves, gulls and creaking timber ---------------- */
 var Sound=(function(){
-  var ctx,master,musicBus,seaBus,playing=false,timers=[],musicSrc=null,loading=null,LOOP=77.8378;
+  var ctx,master,musicBus,seaBus,playing=false,timers=[],musicSrc=null,loading=null,LOOP=82.7586;
   var vol={music:.75,sea:.45};
   try{ var sv=JSON.parse(localStorage.getItem('ia-vol2')||'null'); if(sv){vol.music=+sv.music;vol.sea=+sv.sea;} }catch(e){}
   function noise(sec,brown){ var len=Math.floor(ctx.sampleRate*sec), b=ctx.createBuffer(2,len,ctx.sampleRate);
@@ -689,17 +955,13 @@ var Sound=(function(){
       var vg=ctx.createGain(); vg.gain.value=0; var p=ctx.createStereoPanner(); p.pan.value=k?.45:-.45;
       loopSrc(white,k*3.1).connect(f).connect(vg).connect(p).connect(seaBus); waveVoices.push({f:f,g:vg});
     }
-    var bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=600; bp.Q.value=1.1; var wg=ctx.createGain(); wg.gain.value=.05;
-    var hp=ctx.createBiquadFilter(); hp.type='bandpass'; hp.frequency.value=1200; hp.Q.value=16; var hg=ctx.createGain(); hg.gain.value=0;
-    var ws=loopSrc(white,1.7); ws.connect(bp).connect(wg).connect(seaBus); ws.connect(hp).connect(hg).connect(seaBus);
-    wind={bp:bp,g:wg,hp:hp,hg:hg};
   }
   function wave(v){ if(!playing) return; var t=ctx.currentTime+.05, up=1.6+Math.random()*1.8, dn=2.6+Math.random()*2.6, pk=.16+Math.random()*.22;
     v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value,t); v.g.gain.linearRampToValueAtTime(pk,t+up); v.g.gain.linearRampToValueAtTime(.015,t+up+dn);
     v.f.frequency.cancelScheduledValues(t); v.f.frequency.setValueAtTime(Math.max(200,v.f.frequency.value),t);
     v.f.frequency.exponentialRampToValueAtTime(1100+Math.random()*1600,t+up); v.f.frequency.exponentialRampToValueAtTime(260,t+up+dn);
     later(function(){wave(v);},(up+dn*.65)*1000+Math.random()*1600); }
-  function gust(){ if(!playing) return; var t=ctx.currentTime+.05, d=3+Math.random()*4, f=320+Math.random()*800;
+  function gust(){ if(!playing||!wind) return; var t=ctx.currentTime+.05, d=3+Math.random()*4, f=320+Math.random()*800;
     wind.bp.frequency.setTargetAtTime(f,t,d/3); wind.g.gain.setTargetAtTime(.025+Math.random()*.06,t,d/3);
     wind.hp.frequency.setTargetAtTime(f*2.1,t,d/3); wind.hg.gain.setTargetAtTime(Math.random()<.35?.012+Math.random()*.012:0,t,d/3);
     later(gust,d*1000); }
@@ -769,15 +1031,273 @@ var Sound=(function(){
   ctrls.forEach(function(b){ b.addEventListener('click',function(){ select(b.dataset.place,true); }); });
 })();
 
+/* ---------------- Take the Helm: playable teaser ---------------- */
+(function(){
+  var box=document.getElementById('game'); if(!box) return;
+  var cv=document.getElementById('g-sea'), fx=document.getElementById('g-fx'), c2=fx.getContext('2d');
+  var wheelEl=document.getElementById('g-wheel'), wheelImg=wheelEl.querySelector('img'), startEl=document.getElementById('g-start'), goBtn=document.getElementById('g-go'), boostBtn=document.getElementById('g-boost');
+  var fragEl=document.getElementById('g-frag'), headEl=document.getElementById('g-head'), spdEl=document.getElementById('g-speed'), sailEl=document.getElementById('g-sail'), toast=document.getElementById('g-toast');
+  var gl=null; try{ gl=cv.getContext('webgl',{alpha:false,antialias:false,powerPreference:'high-performance'}); }catch(e){}
+  if(!gl){ box.classList.add('no-gl'); startEl.querySelector('p').textContent='Your browser can\u2019t run the sea renderer, so the teaser is unavailable here.'; goBtn.hidden=true; return; }
+  var SHEET={"src": "ship-helm.webp", "ppm": 7.014, "a0": -60.0, "step": 3.75, "frames": [[0, 0, 338, 319, 172.9, 304.7], [338, 0, 325, 321, 163.8, 304.7], [676, 0, 309, 321, 154.0, 304.7], [1014, 0, 295, 323, 144.9, 304.7], [1352, 0, 277, 323, 135.1, 304.7], [1690, 0, 259, 323, 124.6, 304.0], [2028, 0, 244, 324, 114.1, 304.0], [2366, 0, 230, 325, 106.4, 304.0], [2704, 0, 219, 326, 101.5, 304.0], [0, 328, 206, 327, 96.6, 304.7], [338, 328, 193, 327, 91.0, 304.0], [676, 328, 178, 327, 85.4, 304.0], [1014, 328, 164, 328, 79.8, 304.0], [1352, 328, 155, 328, 77.0, 304.0], [1690, 328, 153, 328, 74.2, 304.0], [2028, 328, 149, 328, 71.4, 304.0], [2366, 328, 146, 328, 68.6, 304.0], [2704, 328, 141, 328, 65.1, 304.0], [0, 656, 139, 328, 64.4, 304.0], [338, 656, 147, 328, 74.2, 304.0], [676, 656, 159, 328, 84.0, 304.0], [1014, 656, 172, 327, 93.8, 304.0], [1352, 656, 182, 326, 102.2, 304.0], [1690, 656, 192, 326, 109.9, 304.0], [2028, 656, 210, 326, 116.9, 304.0], [2366, 656, 227, 325, 123.9, 304.0], [2704, 656, 244, 325, 129.5, 304.7], [0, 984, 260, 323, 135.1, 304.0], [338, 984, 278, 323, 142.8, 304.0], [676, 984, 294, 323, 149.1, 304.7], [1014, 984, 309, 321, 155.4, 304.7], [1352, 984, 324, 321, 160.3, 304.7], [1690, 984, 337, 319, 164.5, 304.7]]}, STEP=SHEET.step, A0=SHEET.a0, NF=SHEET.frames.length;
+  var NW=12, WAVES=[]; for(var i=0;i<NW;i++){ var lam=36*Math.pow(.72,i), th=0.4+0.85*Math.sin(i*2.39+.4); WAVES.push({k:6.2831853/lam,lam:lam,amp:lam*(i<3?.021:.028),dx:Math.sin(th),dz:Math.cos(th)}); }
+  var VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  var FS=['#ifdef GL_FRAGMENT_PRECISION_HIGH','precision highp float;','#else','precision mediump float;','#endif',
+  'uniform vec2 uRes,uPos,uR,uFw;uniform float uT,uHor,uF,uCam;uniform vec4 uW[12];uniform vec3 uSun;',
+  'const vec3 HZ=vec3(0.47,0.36,0.41);',
+  'vec3 sky(vec3 d){float y=max(d.y,0.);vec3 c=mix(vec3(0.80,0.42,0.34),vec3(0.30,0.17,0.26),smoothstep(0.,.14,y));c=mix(c,vec3(0.07,0.06,0.15),smoothstep(.14,.6,y));',
+  ' float sd=max(dot(d,uSun),0.);return c+vec3(1.,.52,.25)*(pow(sd,8.)*.3+pow(sd,70.)*.7);}',
+  'vec3 tone(vec3 c){c=c/(1.+c*.3);return pow(c,vec3(1./2.2));}',
+  'void main(){vec2 fc=gl_FragCoord.xy;float yT=uRes.y-fc.y;float s=uRes.y/700.;',
+  ' vec3 rd=normalize(vec3((fc.x-uRes.x*.5)/uF,(uHor-yT)/uF,1.));',
+  ' if(rd.y>-.0004){gl_FragColor=vec4(mix(HZ,tone(sky(rd)),smoothstep(0.,.06,rd.y)),1.);return;}',
+  ' float t=uCam/(-rd.y);vec2 pc=rd.xz*t;vec2 p=uPos+uR*pc.x+uFw*pc.y;float fp=t/uF;float h=0.;vec2 g=vec2(0.);',
+  ' for(int i=0;i<12;i++){vec4 w=uW[i];float fade=clamp(1.-fp*5.*w.z/6.2831853,0.,1.);if(fade<=0.)continue;',
+  '  float ph=w.z*dot(w.xy,p)-sqrt(9.81*w.z)*uT+float(i)*1.7;float a=w.w*fade;h+=a*sin(ph);g+=a*w.z*w.xy*cos(ph);}',
+  ' vec2 gc=vec2(dot(g,uR),dot(g,uFw));vec3 n=normalize(vec3(-gc.x,1.,-gc.y));vec3 r=reflect(rd,n);r.y=abs(r.y);',
+  ' float fr=.02+.98*pow(1.-max(dot(n,-rd),0.),5.);vec3 sss=vec3(.015,.10,.095)*clamp(h*.7+.35,0.,1.6);',
+  ' vec3 col=mix(vec3(.004,.028,.036)+sss,sky(r),fr);',
+  ' float sp=max(dot(r,uSun),0.);col+=vec3(1.,.6,.3)*(pow(sp,900.)*7.+pow(sp,110.)*.55)*(1.-clamp(fp*.25,0.,.92));',
+  ' col=tone(col);col=mix(col,HZ,(1.-exp(-t*.0019))*.92);',
+  ' col=mix(HZ*.95,col,smoothstep(0.,10.*s,yT-uHor));gl_FragColor=vec4(col,1.);}'].join('\n');
+  function sh(type,src){ var o=gl.createShader(type); gl.shaderSource(o,src); gl.compileShader(o); if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; }
+  var prog,U={};
+  try{ prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error('link'); gl.useProgram(prog);
+    var buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    var ap=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+    ['uRes','uPos','uR','uFw','uT','uHor','uF','uCam','uW','uSun'].forEach(function(n){ U[n]=gl.getUniformLocation(prog,n); });
+    var wa=new Float32Array(NW*4); WAVES.forEach(function(w,i){ wa.set([w.dx,w.dz,w.k,w.amp],i*4); }); gl.uniform4fv(U.uW,wa);
+  }catch(e){ box.classList.add('no-gl'); goBtn.hidden=true; return; }
+
+  var sheet=new Image(); sheet.decoding='async'; sheet.src=SHEET.src; sheet.onload=function(){ if(!running) draw(); };
+  var CAMH=14, DIST=110, CRUISE=7.2, FULL=12.6, W=0,H=0,F=800,HOR=300,dpr=1,gdpr=1,RS=.62,ft=16,adj=0;
+  var SUNW={x:-.31,y:.05,z:.95};
+  var st={}, bottles=[], isles=[], running=false, started=false, raf=0, last=0, keys={}, dragging=false, dragA=0, toastT=0, visible=false;
+  (function(){ var r=7; function rnd(){ r=(r*16807)%2147483647; return r/2147483647; }
+    for(var i=0;i<9;i++){ var b=i/9*6.283+rnd()*.5, d=2200+rnd()*1600, n=9+Math.floor(rnd()*6), pts=[];
+      for(var j=0;j<=n;j++){ var u=j/n; pts.push([u, Math.pow(Math.sin(u*Math.PI),.7)*(.45+.55*rnd())]); }
+      isles.push({x:Math.sin(b)*d,z:Math.cos(b)*d,w:220+rnd()*420,h:40+rnd()*90,pts:pts}); } })();
+  function fwd(h){ return {x:Math.sin(h),z:Math.cos(h)}; }
+  function spawn(minD,maxD){ var a=st.h+(Math.random()-.5)*1.1, d=minD+Math.random()*(maxD-minD); return {x:st.x+Math.sin(a)*d,z:st.z+Math.cos(a)*d,ph:Math.random()*6}; }
+  function reset(){ st={x:0,z:0,h:0,ch:0,cx:0,cz:-DIST,v:0,tr:0,heel:0,wheel:0,t:0,frags:0,trail:[],tt:0,boost:false}; bottles=[spawn(220,320),spawn(380,520),spawn(560,720)]; updHud(); }
+  reset();
+  function resize(){ var r=box.getBoundingClientRect(); W=r.width; H=r.height; dpr=Math.min(window.devicePixelRatio||1,1.5); gdpr=Math.min(window.devicePixelRatio||1,1)*RS;
+    cv.width=Math.max(2,Math.round(W*gdpr)); cv.height=Math.max(2,Math.round(H*gdpr)); fx.width=Math.round(W*dpr); fx.height=Math.round(H*dpr); gl.viewport(0,0,cv.width,cv.height);
+    F=Math.min(H*1.25,W*1.1); HOR=H*.4; }
+  function waveAt(x,z,t){ var h=0,gx=0,gz=0; for(var i=0;i<4;i++){ var w=WAVES[i], ph=w.k*(w.dx*x+w.dz*z)-Math.sqrt(9.81*w.k)*t+i*1.7, c=Math.cos(ph); h+=w.amp*Math.sin(ph); gx+=w.amp*w.k*w.dx*c; gz+=w.amp*w.k*w.dz*c; } return {h:h,gx:gx,gz:gz}; }
+  var lastHud='';
+  function updHud(){ var d=((st.h*180/Math.PI)%360+360)%360, txt=Math.min(st.frags,5)+'|'+Math.round(d)+'|'+(st.v*1.944).toFixed(1)+'|'+st.boost;
+    if(txt===lastHud) return; lastHud=txt;
+    fragEl.textContent=Math.min(st.frags,5)+' / 5'+(st.frags>=5?' \u2713':'');
+    headEl.textContent=['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8]+' '+Math.round(d)+'\u00b0';
+    spdEl.textContent=(st.v*1.944).toFixed(1)+' kn'; sailEl.textContent=st.boost?'Full sail':'Cruising'; sailEl.parentNode.classList.toggle('on',st.boost); }
+  function say(msg,ms){ toast.textContent=msg; toast.hidden=false; toastT=ms||2600; }
+  var actx=null, gMaster=null, gMusic=null, washG=null, washF=null, windG=null, windF=null, muted=false, audioN=0, LOOPH=36.923;
+  try{ muted=localStorage.getItem('ia-helm-mute')==='1'; }catch(e){}
+  function noiseBuf(sec,brown){ var len=Math.floor(actx.sampleRate*sec), b=actx.createBuffer(2,len,actx.sampleRate);
+    for(var c=0;c<2;c++){ var d=b.getChannelData(c), last=0; for(var i=0;i<len;i++){ var w=Math.random()*2-1; if(brown){ last=(last+.02*w)/1.02; d[i]=last*3.5; } else d[i]=w; } } return b; }
+  function loopNoise(buf,filt,gain){ var s=actx.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(filt).connect(gain).connect(gMaster); s.start(); }
+  function audioInit(){
+    if(actx) return; try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+    gMaster=actx.createGain(); gMaster.gain.value=muted?0:1; gMaster.connect(actx.destination);
+    gMusic=actx.createGain(); gMusic.gain.value=.55; gMusic.connect(gMaster);
+    washF=actx.createBiquadFilter(); washF.type='lowpass'; washF.frequency.value=420; washG=actx.createGain(); washG.gain.value=.12; loopNoise(noiseBuf(6,true),washF,washG);
+    
+    fetch('helm.mp3').then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(function(ab){ return new Promise(function(res,rej){ var q=actx.decodeAudioData(ab,res,rej); if(q&&q.then) q.then(res,rej); }); })
+      .then(function(b){ var src=actx.createBufferSource(); src.buffer=b; src.loop=true; src.loopStart=0; src.loopEnd=Math.min(LOOPH,b.duration); src.connect(gMusic); src.start(actx.currentTime+.05); })
+      .catch(function(){});
+  }
+  function audioTick(){ if(!actx||++audioN%6) return; var t=actx.currentTime, k=Math.max(0,Math.min(1,(st.v-3)/(FULL-3)));
+    washG.gain.setTargetAtTime(.1+.28*k,t,.4); washF.frequency.setTargetAtTime(380+700*k,t,.4); }
+  function setMute(m){ muted=m; try{ localStorage.setItem('ia-helm-mute',m?'1':'0'); }catch(e){}
+    if(gMaster) gMaster.gain.setTargetAtTime(m?0:1,actx.currentTime,.08); muteBtn.setAttribute('aria-pressed',m); muteBtn.querySelector('b').textContent=m?'Off':'On'; }
+  var muteBtn=document.getElementById('g-mute'); setMute(muted); muteBtn.addEventListener('click',function(){ setMute(!muted); });
+  function chime(big){ try{ if(!actx) return; var t=actx.currentTime;
+    [880,1318.5,1760].concat(big?[2637]:[]).forEach(function(f,i){ var o=actx.createOscillator(),g=actx.createGain(); o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+i*.07); g.gain.linearRampToValueAtTime(.06,t+i*.07+.01); g.gain.exponentialRampToValueAtTime(.0005,t+i*.07+1.4); o.connect(g).connect(gMaster); o.start(t+i*.07); o.stop(t+i*.07+1.5); }); }catch(e){} }
+  function step(dt){
+    if(!dragging){ var target=keys.l?-540:keys.r?540:0;
+      if(keys.l||keys.r) st.wheel+=Math.sign(target-st.wheel)*Math.min(Math.abs(target-st.wheel),360*dt); else st.wheel-=st.wheel*Math.min(1,dt*1.6); }
+    var rud=Math.max(-1,Math.min(1,st.wheel/540));
+    st.boost=!!keys.boost;
+    st.v+=((st.boost?FULL:CRUISE)-st.v)*Math.min(1,dt*(st.boost?.55:.4));
+    var trT=rud*(17*Math.PI/180)*Math.pow(Math.max(.15,st.v/CRUISE),.6);
+    st.tr+=(trT-st.tr)*Math.min(1,dt*1.6); audioTick();
+    st.h+=st.tr*dt;
+    st.heel+=((Math.max(-.08,Math.min(.08,-st.tr*.2)))-st.heel)*Math.min(1,dt*2);
+    var f=fwd(st.h); st.x+=f.x*st.v*dt; st.z+=f.z*st.v*dt;
+    st.ch+=(st.h-st.ch)*(1-Math.exp(-dt*.9));
+    var cf=fwd(st.ch), tx=st.x-cf.x*DIST, tz=st.z-cf.z*DIST, k=1-Math.exp(-dt*2.4); st.cx+=(tx-st.cx)*k; st.cz+=(tz-st.cz)*k;
+    st.tt+=dt; if(st.tt>.15){ st.tt=0; st.trail.push({x:st.x-f.x*15,z:st.z-f.z*15,a:0,b:st.boost?1:0}); if(st.trail.length>80) st.trail.shift(); }
+    for(var i=0;i<st.trail.length;i++) st.trail[i].a+=dt;
+    for(i=0;i<bottles.length;i++){ var b=bottles[i], dx=b.x-st.x, dz=b.z-st.z, dist=Math.hypot(dx,dz);
+      if(dist<26){ st.frags++; chime(st.frags===5); bottles[i]=spawn(420,700);
+        if(st.frags===5) say('The Asure Chart is whole\u2026 for now. Chapter 1: The Return of the Pirate is on its way.',6000);
+        else if(st.frags<5) say('Chart fragment recovered \u00b7 '+st.frags+' of 5'); else say('Another fragment from the deep'); }
+      else if((dx*cf.x+dz*cf.z)< -60 || dist>1500) bottles[i]=spawn(380,650); }
+    if(toastT>0){ toastT-=dt*1000; if(toastT<=0) toast.hidden=true; }
+    updHud();
+    wheelImg.style.transform='rotate('+st.wheel.toFixed(1)+'deg)';
+  }
+  function draw(){
+    var t=st.t, cf=fwd(st.ch), cr={x:Math.cos(st.ch),z:-Math.sin(st.ch)}, cam={x:st.cx,z:st.cz};
+    function proj(x,y,z){ var dx=x-cam.x, dz=z-cam.z, zc=dx*cf.x+dz*cf.z, xc=dx*cr.x+dz*cr.z; if(zc<1) return null; return {x:W/2+F*xc/zc, y:HOR+F*(CAMH-y)/zc, z:zc}; }
+    var sun={x:SUNW.x*cr.x+SUNW.z*cr.z, y:SUNW.y, z:SUNW.x*cf.x+SUNW.z*cf.z}, sl=Math.hypot(sun.x,sun.y,sun.z);
+    gl.uniform2f(U.uRes,cv.width,cv.height); gl.uniform2f(U.uPos,cam.x,cam.z); gl.uniform2f(U.uR,cr.x,cr.z); gl.uniform2f(U.uFw,cf.x,cf.z);
+    gl.uniform1f(U.uT,t); gl.uniform1f(U.uHor,HOR*gdpr); gl.uniform1f(U.uF,F*gdpr); gl.uniform1f(U.uCam,CAMH); gl.uniform3f(U.uSun,sun.x/sl,sun.y/sl,sun.z/sl);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    c2.setTransform(dpr,0,0,dpr,0,0); c2.clearRect(0,0,W,H);
+    c2.fillStyle='rgba(74,52,74,.82)';
+    for(var i=0;i<isles.length;i++){ var s0=isles[i], p=proj(s0.x,0,s0.z); if(!p) continue; var w=F*s0.w/p.z, hh=F*s0.h/p.z; if(p.x+w<0||p.x-w>W) continue;
+      c2.beginPath(); c2.moveTo(p.x-w/2,HOR+1); for(var j=0;j<s0.pts.length;j++){ var q=s0.pts[j]; c2.lineTo(p.x-w/2+q[0]*w,HOR+1-q[1]*hh); } c2.closePath(); c2.fill(); }
+    c2.lineCap='butt'; c2.lineJoin='round';
+    for(i=1;i<st.trail.length;i++){ var a=st.trail[i-1], b=st.trail[i], pa=proj(a.x,0,a.z), pb=proj(b.x,0,b.z); if(!pa||!pb) continue;
+      var age=b.a, al=Math.max(0,(b.b?.3:.22)-age*.02)*Math.min(1,(pb.z-30)/60); if(al<=0) continue; c2.strokeStyle='rgba(235,240,235,'+al.toFixed(3)+')'; c2.lineWidth=Math.min(26,Math.max(1,F*Math.min(7,1.6+age*.55)/pb.z));
+      c2.beginPath(); c2.moveTo(pa.x,pa.y); c2.lineTo(pb.x,pb.y); c2.stroke(); }
+    var drawn=[]; for(i=0;i<bottles.length;i++){ var bb=bottles[i], wv=waveAt(bb.x,bb.z,t), pp=proj(bb.x,wv.h*.8+.6+Math.sin(t*2+bb.ph)*.15,bb.z); if(pp) drawn.push({p:pp,b:bb}); }
+    drawn.sort(function(a,b){ return b.p.z-a.p.z; });
+    function bottle(o){ var p=o.p, s=Math.max(1.1,F*1.4/p.z), pulse=.75+.25*Math.sin(t*3+o.b.ph);
+      var bh=Math.min(HOR*.9,F*70/p.z), bg=c2.createLinearGradient(0,p.y-bh,0,p.y); bg.addColorStop(0,'rgba(79,195,184,0)'); bg.addColorStop(1,'rgba(120,230,215,'+(.28*pulse).toFixed(3)+')'); c2.fillStyle=bg; c2.fillRect(p.x-Math.max(1,s*.9),p.y-bh,Math.max(2,s*1.8),bh);
+      var g=c2.createRadialGradient(p.x,p.y,0,p.x,p.y,s*18); g.addColorStop(0,'rgba(160,255,240,'+(.9*pulse).toFixed(3)+')'); g.addColorStop(.25,'rgba(79,195,184,'+(.45*pulse).toFixed(3)+')'); g.addColorStop(1,'rgba(79,195,184,0)');
+      c2.fillStyle=g; c2.beginPath(); c2.arc(p.x,p.y,s*18,0,6.283); c2.fill();
+      c2.fillStyle='rgba(20,45,40,.95)'; c2.beginPath(); c2.ellipse(p.x,p.y,s*1.1,s*2.2,.5,0,6.283); c2.fill(); }
+    var sp=proj(st.x,0,st.z), shipZ=sp?sp.z:DIST;
+    drawn.forEach(function(o){ if(o.p.z>shipZ) bottle(o); });
+    if(sp&&sheet.complete&&sheet.naturalWidth){
+      var bearing=Math.atan2(st.x-cam.x,st.z-cam.z), rel=(st.h-bearing)*180/Math.PI;
+      var fi=Math.max(0,Math.min(NF-1,(rel-A0)/STEP)), i0=Math.floor(fi), i1=Math.min(NF-1,i0+1), fr0=SHEET.frames[i0], fr1=SHEET.frames[i1], mix=fi-i0;
+      var wv=waveAt(st.x,st.z,t), f=fwd(st.h), roll=-(wv.gx*f.z-wv.gz*f.x)*.45+st.heel;
+      var s=(F/sp.z)/SHEET.ppm, wy=HOR+F*(CAMH-wv.h*.8)/sp.z;
+      c2.save(); c2.translate(sp.x,wy); c2.rotate(roll); c2.scale(s,s);
+      c2.save(); c2.globalAlpha=.15; c2.scale(1,-.42); c2.drawImage(sheet,fr0[0],fr0[1],fr0[2],fr0[3],-fr0[4],-fr0[5],fr0[2],fr0[3]); c2.restore();
+      c2.globalAlpha=1; c2.drawImage(sheet,fr0[0],fr0[1],fr0[2],fr0[3],-fr0[4],-fr0[5],fr0[2],fr0[3]);
+      if(mix>.02&&i1!==i0){ c2.globalAlpha=mix; c2.drawImage(sheet,fr1[0],fr1[1],fr1[2],fr1[3],-fr1[4],-fr1[5],fr1[2],fr1[3]); c2.globalAlpha=1; }
+      var foam=st.boost?.34:.22, gg=c2.createRadialGradient(0,4,0,0,4,fr0[2]*.45); gg.addColorStop(0,'rgba(235,240,235,'+foam+')'); gg.addColorStop(1,'rgba(235,240,235,0)');
+      c2.fillStyle=gg; c2.beginPath(); c2.ellipse(0,6,fr0[2]*.42,fr0[3]*.03+8,0,0,6.283); c2.fill(); c2.restore();
+    }
+    drawn.forEach(function(o){ if(o.p.z<=shipZ) bottle(o); });
+    c2.fillStyle='rgba(120,230,215,.85)';
+    for(i=0;i<bottles.length;i++){ var B=bottles[i], dx=B.x-cam.x, dz=B.z-cam.z, zc=dx*cf.x+dz*cf.z, xc=dx*cr.x+dz*cr.z, ang=Math.atan2(xc,zc), sx=W/2+F*Math.tan(Math.max(-1.4,Math.min(1.4,ang)));
+      if(zc>1&&sx>20&&sx<W-20) continue; var left=ang<0, x=left?18:W-18, y=HOR+20;
+      c2.beginPath(); if(left){ c2.moveTo(x-8,y); c2.lineTo(x+6,y-8); c2.lineTo(x+6,y+8); } else { c2.moveTo(x+8,y); c2.lineTo(x-6,y-8); c2.lineTo(x-6,y+8); } c2.fill(); }
+  }
+  function frame(now){
+    var raw=last?now-last:16; last=now; var dt=Math.min(.1,raw/1000);
+    ft=ft*.9+raw*.1; if(++adj>45){ adj=0; if(ft>22&&RS>.4){ RS=Math.max(.4,RS*.85); resize(); } else if(ft<14.5&&RS<.85){ RS=Math.min(.85,RS*1.07); resize(); } }
+    if(started){ st.t+=dt; step(dt); } draw(); if(running) raf=requestAnimationFrame(frame); }
+  function setRun(on){ if(on===running) return; running=on; last=0; if(actx){ if(on) actx.resume(); else actx.suspend(); } if(on) raf=requestAnimationFrame(frame); else cancelAnimationFrame(raf); }
+  resize(); draw();
+  new ResizeObserver(function(){ resize(); if(!running) draw(); }).observe(box);
+  new IntersectionObserver(function(es){ visible=es[0].isIntersecting; setRun(started&&visible&&!document.hidden); },{threshold:.15}).observe(box);
+  document.addEventListener('visibilitychange',function(){ setRun(started&&visible&&!document.hidden); });
+  goBtn.addEventListener('click',function(){ var nav=document.querySelector('.nav'), nh=nav?nav.getBoundingClientRect().height:0;
+    window.scrollTo({top:box.getBoundingClientRect().top+window.scrollY-nh+1,behavior:'smooth'});
+    if(window.Sound&&Sound.isOn()){ var sb=document.getElementById('snd'); if(sb) sb.click(); }
+    audioInit(); if(actx) actx.resume();
+    started=true; startEl.hidden=true; box.classList.add('live'); reset(); say('Find the glowing bottles. Hold Shift for full sail.',3800); box.focus({preventScroll:true}); setRun(visible); });
+  function angAt(e){ var r=wheelEl.getBoundingClientRect(); return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI; }
+  wheelEl.addEventListener('pointerdown',function(e){ if(!started) return; dragging=true; dragA=angAt(e); wheelEl.setPointerCapture(e.pointerId); e.preventDefault(); });
+  wheelEl.addEventListener('pointermove',function(e){ if(!dragging) return; var a=angAt(e), d=a-dragA; if(d>180) d-=360; if(d<-180) d+=360; dragA=a; st.wheel=Math.max(-540,Math.min(540,st.wheel+d)); });
+  function up(){ dragging=false; } wheelEl.addEventListener('pointerup',up); wheelEl.addEventListener('pointercancel',up);
+  function hold(on){ return function(e){ if(!started) return; keys.boost=on; if(e) e.preventDefault(); }; }
+  boostBtn.addEventListener('pointerdown',hold(true)); boostBtn.addEventListener('pointerup',hold(false)); boostBtn.addEventListener('pointercancel',hold(false)); boostBtn.addEventListener('pointerleave',hold(false));
+  function key(e,down){ if(!started||!visible) return; var k=e.key;
+    if(k==='Shift'){ keys.boost=down; return; }
+    if((k==='m'||k==='M')&&down){ setMute(!muted); return; }
+    var l=(k==='a'||k==='A'||k==='ArrowLeft'), r=(k==='d'||k==='D'||k==='ArrowRight'); if(!l&&!r) return;
+    if(box.contains(document.activeElement)||document.activeElement===document.body) e.preventDefault(); if(l) keys.l=down; if(r) keys.r=down; }
+  addEventListener('keydown',function(e){ key(e,true); }); addEventListener('keyup',function(e){ key(e,false); });
+  addEventListener('blur',function(){ keys={}; });
+})();
+
+/* ---------------- prologue reader ---------------- */
+(function(){
+  var DATA="W3siayI6ICJyYXciLCAidCI6ICJGQURFIElOOiIsICJiIjogdHJ1ZX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJURVhUIE9OIEJMQUNLOiJ9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiVGhlIENhcmliYmVhbiBTZWEsIDE3MTcuIiwgImkiOiB0cnVlLCAiYiI6IGZhbHNlLCAiYmlnIjogZmFsc2V9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiVGhlIEdvbGRlbiBBZ2Ugb2YgUGlyYWN5LiIsICJpIjogdHJ1ZSwgImIiOiBmYWxzZSwgImJpZyI6IGZhbHNlfSwgeyJrIjogInNwYWNlIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJURVhUIE9OIEJMQUNLOiJ9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiVGhleSBzYXkgRnJhbsOnb2lzIGzigJlPbG9ubmFpcyBkaWVkIGluIDE2NjksIiwgImkiOiB0cnVlLCAiYiI6IGZhbHNlLCAiYmlnIjogZmFsc2V9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAidG9ybiBhcGFydCBvbiBhIGJlYWNoIGluIERhcmnDqW4uIiwgImkiOiB0cnVlLCAiYiI6IGZhbHNlLCAiYmlnIjogZmFsc2V9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiVGhleSBzYXkgYSBsb3Qgb2YgdGhpbmdzLiIsICJpIjogdHJ1ZSwgImIiOiBmYWxzZSwgImJpZyI6IGZhbHNlfSwgeyJrIjogInNjZW5lIiwgInQiOiAiRVhULiBRVUVFTiBBTk5F4oCZUyBSRVZFTkdFIOKAkyBNQUlOIERFQ0sg4oCTIERVU0sifSwgeyJrIjogImFjdGlvbiIsICJ0IjogIlRoZSBzdW4gc2lua3MgaW50byBhIGNhbG0sIGNvcHBlciBzZWEuIFRoZSBRVUVFTiBBTk5F4oCZUyBSRVZFTkdFLCBmb3J0eSBndW5zIGFuZCB0aHJlZSBtYXN0cywgcmlkZXMgbG93IHdpdGggcGx1bmRlci4gSGVyIGNyZXcgd29yayB0aGUgbGluZXMsIHNpbmcsIGFuZCBhcmd1ZSBvdmVyIGRpY2UuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJBVVJFTElVUyBTVEFMV0FSRCAoMjBzLCBsZWFuIGFuZCBxdWljaywgYSBkZWNraGFuZCB3aXRoIGEgc2FpbG9y4oCZcyBoYW5kcyBhbmQgYSBmaWdodGVy4oCZcyBleWVzKSBoYXVscyBhIGxpbmUgdGlnaHQgYW5kIG1ha2VzIGl0IGZhc3QuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJBdCB0aGUgaGVsbSBzdGFuZHMgRURXQVJEIFRFQUNILCBrbm93biBhcyBCTEFDS0JFQVJEICg0MHMpLiBTbW9rZSBjdXJscyBmcm9tIHRoZSBzbG93LWJ1cm5pbmcgZnVzZXMgdHVja2VkIHVuZGVyIGhpcyBoYXQuIEhhbGYgdGhlIENhcmliYmVhbiBmZWFycyBoaW0uIFRoZSBvdGhlciBoYWxmIGhhc27igJl0IG1ldCBoaW0geWV0LiJ9LCB7ImsiOiAibGluZSIsICJuIjogIkJMQUNLQkVBUkQiLCAicGFydHMiOiBbeyJkIjogIlN0YWx3YXJkISBZb3UgY29pbCBhIGxpbmUgbGlrZSBhIGRydW5rIHRpZXMgYSBrbm90LiJ9XX0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQVVSRUxJVVMiLCAicGFydHMiOiBbeyJkIjogIkEgZHJ1bmsgdGF1Z2h0IG1lLCBDYXB0YWluLiJ9XX0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQkxBQ0tCRUFSRCIsICJwYXJ0cyI6IFt7InAiOiAiZ3Jpbm5pbmcifSwgeyJkIjogIkF5ZS4gQW5kIGhl4oCZbGwgdGVhY2ggeW91IGJldHRlciB0b21vcnJvdy4gR2V0IHVwIHRvcCBhbmQgdGVsbCBtZSB3aGF0IHRoZSBzZWEgaXMgaGlkaW5nLiJ9XX0sIHsiayI6ICJnYW1lIiwgInQiOiAiRnJlZSByb2FtIG9uIGRlY2suIFRhbGsgdG8gdGhlIGNyZXcsIHRoZW4gY2xpbWIgdGhlIHJpZ2dpbmcgdG8gdGhlIG1haW4gdG9wIChjbGltYmluZyB0dXRvcmlhbCkuIn0sIHsiayI6ICJzY2VuZSIsICJ0IjogIkVYVC4gUVVFRU4gQU5OReKAmVMgUkVWRU5HRSDigJMgTUFJTiBUT1Ag4oCTIENPTlRJTlVPVVMifSwgeyJrIjogImFjdGlvbiIsICJ0IjogIkF1cmVsaXVzIHB1bGxzIGhpbXNlbGYgb250byB0aGUgcGxhdGZvcm0gaGlnaCBhYm92ZSB0aGUgZGVjay4gRmFyIG9mZiwgYSBzbG9vcCBjdXRzIHRvd2FyZCB0aGVtLCBmbHlpbmcgQmxhY2tiZWFyZOKAmXMgb3duIGJsYWNrIGZsYWcuIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQVVSRUxJVVMiLCAicGFydHMiOiBbeyJwIjogInNob3V0aW5nIGRvd24ifSwgeyJkIjogIlNhaWwgaG8hIE9mZiB0aGUgc3RhcmJvYXJkIGJvdyEgU2hl4oCZcyBmbHlpbmcgb3VyIGNvbG91cnMhIn1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJCTEFDS0JFQVJEIiwgInBhcnRzIjogW3sicCI6ICJyYWlzaW5nIGhpcyBzcHlnbGFzcyJ9LCB7ImQiOiAiVGhlIE1hcmlnb2xkLiBUZWFndWXigJlzIGJhY2sgZnJvbSBOYXNzYXUuIFRocmVlIGRheXMgbGF0ZSwgdGhlIGRvZy4ifV19LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiQXVyZWxpdXMgbG9va3MgYWdhaW4uIFNvbWV0aGluZyBpcyB3cm9uZy4gVGhlIHNsb29w4oCZcyBkZWNrIGlzIHRvbyBxdWlldC4gRnJlc2ggc2NvcmNoIG1hcmtzIHJ1biBhbG9uZyBoZXIgaHVsbC4gTm9ib2R5IHdhdmVzLiJ9LCB7ImsiOiAiZ2FtZSIsICJ0IjogIlVzZSB0aGUgc3B5Z2xhc3MuIEluc3BlY3QgdGhlIE1hcmlnb2xkIGFuZCBzcG90IHRoZSBzY29yY2ggbWFya3MgYW5kIHRoZSBibG9vZCBvbiBoZXIgYm93LiJ9LCB7ImsiOiAibGluZSIsICJuIjogIkFVUkVMSVVTIiwgInBhcnRzIjogW3siZCI6ICJDYXB0YWlu4oCmIFRlYWd1ZSBhbHdheXMgZmlyZXMgYSBzYWx1dGUgd2hlbiBoZSBjb21lcyBob21lLiJ9XX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJCbGFja2JlYXJkIGxvd2VycyB0aGUgc3B5Z2xhc3MuIEZvciBhIG1vbWVudCBoZSBzYXlzIG5vdGhpbmcuIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQkxBQ0tCRUFSRCIsICJwYXJ0cyI6IFt7ImQiOiAiTGV0IGhlciBjb21lIGFsb25nc2lkZS4gUXVpZXRseSwgbGFkcy4gS2VlcCB5b3VyIGhhbmRzIG5lYXIgeW91ciBzdGVlbC4ifV19LCB7ImsiOiAic2NlbmUiLCAidCI6ICJFWFQuIFFVRUVOIEFOTkXigJlTIFJFVkVOR0Ug4oCTIE1BSU4gREVDSyDigJMgTU9NRU5UUyBMQVRFUiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiVGhlIE1hcmlnb2xkIGJ1bXBzIGFnYWluc3QgdGhlIFJldmVuZ2XigJlzIGh1bGwuIEdyYXBwbGluZyBsaW5lcyBsYXNoIHRoZSB0d28gc2hpcHMgdG9nZXRoZXIuIEEgZ2FuZ3BsYW5rIGRyb3BzLiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiQSB0YWxsIG1hbiBzdGVwcyBvbnRvIGl0LCBpbiBhIGxvbmcgY29hdCBnb25lIGdyZXkgd2l0aCBzYWx0LiBPbGQgc2NhcnMgb24gaGlzIGZhY2UuIE9sZGVyIGV5ZXMuIEZSQU7Dh09JUyBM4oCZT0xPTk5BSVMuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJUaGUgd2hvbGUgZGVjayBmYWxscyBzaWxlbnQuIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiTOKAmU9MT05OQUlTIiwgInBhcnRzIjogW3sicCI6ICJsb3csIGRhbmdlcm91cyJ9LCB7ImQiOiAiRWR3YXJkLiJ9XX0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQkxBQ0tCRUFSRCIsICJwYXJ0cyI6IFt7InAiOiAiaGlzIGhhbmQgZHJpZnRpbmcgdG8gaGlzIGN1dGxhc3MifSwgeyJkIjogIkZyYW7Dp29pcy4gVGhlIFNwYW5pc2ggc3dvcmUgdGhleSBoYW5nZWQgeW91LiBPdGhlcnMgc3dvcmUgeW91IHdlcmUgdG9ybiB0byBwaWVjZXMgaW4gRGFyacOpbi4ifV19LCB7ImsiOiAibGluZSIsICJuIjogIkzigJlPTE9OTkFJUyIsICJwYXJ0cyI6IFt7ImQiOiAiVGhleSB3ZXJlIGFsbCBtaXN0YWtlbi4gTG9uZyB0aW1lLCBvbGQgZnJpZW5kLiBXb27igJl0IHlvdSBnaXZlIG1lIGEgcHJvcGVyIHdlbGNvbWU/In1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJCTEFDS0JFQVJEIiwgInBhcnRzIjogW3siZCI6ICJXaGVyZeKAmXMgVGVhZ3VlPyJ9XX0sIHsiayI6ICJsaW5lIiwgIm4iOiAiTOKAmU9MT05OQUlTIiwgInBhcnRzIjogW3siZCI6ICJGZWVkaW5nIHRoZSBzaGFya3Mgb2ZmIFRvcnR1Z2EuIEhlIHNwb2tlIHZlcnkgaGlnaGx5IG9mIHlvdS4gUmlnaHQgdXAgdW50aWwgdGhlIGVuZC4ifV19LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiSGUgc3RlcHMgZG93biBvbnRvIHRoZSBkZWNrLCB1bmh1cnJpZWQsIGFzIGlmIGhlIGFscmVhZHkgb3ducyBpdC4ifSwgeyJrIjogImxpbmUiLCAibiI6ICJM4oCZT0xPTk5BSVMgKENPTlTigJlEKSIsICJwYXJ0cyI6IFt7ImQiOiAiWW91IGhhdmUgc29tZXRoaW5nIG9mIG1pbmUsIEVkd2FyZC4gVGhlIEFzdXJlIENoYXJ0LiBIYW5kIGl0IG92ZXIgYW5kIHlvdXIgbWVuIGtlZXAgdGhlaXIgdGhyb2F0cy4ifV19LCB7ImsiOiAibGluZSIsICJuIjogIkJMQUNLQkVBUkQiLCAicGFydHMiOiBbeyJkIjogIlRoYXQgY2hhcnQgbGVhZHMgdG8gd2F0ZXJzIG5vIG1hbiBjb21lcyBiYWNrIGZyb20uIn1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJM4oCZT0xPTk5BSVMiLCAicGFydHMiOiBbeyJwIjogInNtaWxpbmcifSwgeyJkIjogIkkgY2FtZSBiYWNrLiJ9XX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJBIGJlYXQuIEZvciB0aGUgZmlyc3QgdGltZSwgc29tZXRoaW5nIGxpa2UgZmVhciBjcm9zc2VzIEJsYWNrYmVhcmTigJlzIGZhY2UuIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQkxBQ0tCRUFSRCIsICJwYXJ0cyI6IFt7InAiOiAibGF1Z2hpbmcifSwgeyJkIjogIkFoYWhh4oCmIG9sZCBmcmllbmQuIEnigJlsbCBnaXZlIHlvdSBhIHByb3BlciB3ZWxjb21lLiBJ4oCZbGwgdGhyb3cgYSBwYXJ0eSwganVzdCBmb3IgeW91LiJ9XX0sIHsiayI6ICJsaW5lIiwgIm4iOiAiTOKAmU9MT05OQUlTIiwgInBhcnRzIjogW3sicCI6ICJhbiBldmlsIHNtaXJrIn0sIHsiZCI6ICJSZWFsbHk/In1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJCTEFDS0JFQVJEIiwgInBhcnRzIjogW3sicCI6ICJyb2FyaW5nIn0sIHsiZCI6ICJBTEwgSEFORFMhIEFUVEFDSyEifV19LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiVGhlIE1hcmlnb2xk4oCZcyBoYXRjaGVzIGJ1cnN0IG9wZW4uIERvemVucyBvZiBM4oCZT0xPTk5BSVPigJlTIENSRVcgcG91ciBvdmVyIHRoZSByYWlscywgYmxhZGVzIG91dCwgcGlzdG9scyBmaXJpbmcuIEZhciBtb3JlIHRoYW4gQmxhY2tiZWFyZCBoYXMgbWVuLiJ9LCB7ImsiOiAic2NlbmUiLCAidCI6ICJFWFQuIFFVRUVOIEFOTkXigJlTIFJFVkVOR0Ug4oCTIE1BSU4gREVDSyDigJMgQ09OVElOVU9VUyJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiQ2hhb3MuIFN0ZWVsIG9uIHN0ZWVsLiBHdW5zbW9rZSByb2xscyBhY3Jvc3MgdGhlIGRlY2suIn0sIHsiayI6ICJnYW1lIiwgInQiOiAiQ29tYmF0IHR1dG9yaWFsOiBzdHJpa2UsIHBhcnJ5LCBjb3VudGVyIGFuZCBwaXN0b2wgc2hvdC4gT2JqZWN0aXZlOiBmaWdodCB5b3VyIHdheSB0byB0aGUgQ2FwdGFpbi4ifSwgeyJrIjogImFjdGlvbiIsICJ0IjogIkF1cmVsaXVzIGN1dHMgZG93biB0d28gYm9hcmRlcnMgYW5kIHJlYWNoZXMgQmxhY2tiZWFyZC4gVGhleSBmaWdodCBiYWNrIHRvIGJhY2suIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiQkxBQ0tCRUFSRCIsICJwYXJ0cyI6IFt7ImQiOiAiS2VlcCB5b3VyIGd1YXJkIHVwLCBib3khIn1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJBVVJFTElVUyIsICJwYXJ0cyI6IFt7ImQiOiAiSXQgaXMgdXAhIn1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJCTEFDS0JFQVJEIiwgInBhcnRzIjogW3siZCI6ICJUaGVuIGtlZXAgaXQgaGlnaGVyISJ9XX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJGb3IgZXZlcnkgbWFuIHRoZXkgZHJvcCwgdHdvIG1vcmUgY2xpbWIgYWJvYXJkLiBPbmUgYnkgb25lLCBCbGFja2JlYXJk4oCZcyBjcmV3IGZhbGxzLiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiQWNyb3NzIHRoZSBkZWNrLCBBdXJlbGl1cyBzZWVzIGEgYm9hcmRlciBsZXZlbCBhIHBpc3RvbCBhdCBCbGFja2JlYXJk4oCZcyBiYWNrLiBIZSB0aHJvd3MgaGltc2VsZiBhdCB0aGUgbWFuLiBUaGUgc2hvdCBnb2VzIHdpZGUsIGJ1dCBhIG11c2tldCBidXR0IGNyYWNrcyBhY3Jvc3MgQXVyZWxpdXPigJlzIHNrdWxsLiJ9LCB7ImsiOiAidHJhbnMiLCAidCI6ICJDVVQgVE8gQkxBQ0suIn0sIHsiayI6ICJzY2VuZSIsICJ0IjogIkVYVC4gUVVFRU4gQU5OReKAmVMgUkVWRU5HRSDigJMgTUFJTiBERUNLIOKAkyBOSUdIVCJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiQXVyZWxpdXMgd2FrZXMgdG8gZmlyZWxpZ2h0LiBIaXMgd3Jpc3RzIGFyZSBib3VuZC4gSGUgYW5kIEJsYWNrYmVhcmQgYXJlIHRpZWQgdG8gdGhlIG1haW5tYXN0LCB0aGUgb25seSB0d28gb2YgdGhlIGNyZXcgc3RpbGwgYnJlYXRoaW5nLiBCb2RpZXMgbGl0dGVyIHRoZSBkZWNrLiBM4oCZT2xvbm5haXPigJlzIG1lbiBoYXVsIGNoZXN0cyBvZiBnb2xkIGFjcm9zcyB0byB0aGUgTWFyaWdvbGQuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJM4oCZT2xvbm5haXMgd2Fsa3Mgb3V0IG9mIHRoZSBjYXB0YWlu4oCZcyBjYWJpbiwgdW5yb2xsaW5nIGFuIG9sZCwgc2VhLXN0YWluZWQgY2hhcnQuIEhlIHN0dWRpZXMgaXQsIHRoZW4gY3JvdWNoZXMgaW4gZnJvbnQgb2YgQmxhY2tiZWFyZC4ifSwgeyJrIjogImxpbmUiLCAibiI6ICJM4oCZT0xPTk5BSVMiLCAicGFydHMiOiBbeyJkIjogIldvdWxkIHlvdSBsb29rIGF0IHRoYXQuIFRoZSB0ZXJyb3Igb2YgdGhlIENhcm9saW5hcywgdGllZCB0byBoaXMgb3duIG1hc3QuIn1dfSwgeyJrIjogImxpbmUiLCAibiI6ICJCTEFDS0JFQVJEIiwgInBhcnRzIjogW3siZCI6ICJZb3XigJlsbCBuZXZlciByZWFkIHRoYXQgY2hhcnQuIEhhbGYgb2YgaXQgbGl2ZXMgaW4gbXkgaGVhZC4ifV19LCB7ImsiOiAibGluZSIsICJuIjogIkzigJlPTE9OTkFJUyIsICJwYXJ0cyI6IFt7ImQiOiAiVGhlbiBJ4oCZbGwgbGV0IHRoZSBzZWEgcmVhZCBpdCBvdXQgb2YgeW91LiJ9LCB7InAiOiAic3RhbmRpbmcifSwgeyJkIjogIkdpdmUgdGhlIGRldmlsIG15IHJlZ2FyZHMsIEVkd2FyZC4ifV19LCB7ImsiOiAibGluZSIsICJuIjogIkJMQUNLQkVBUkQiLCAicGFydHMiOiBbeyJkIjogIlRlbGwgaGltIHlvdXJzZWxmLiBIZeKAmXMgYmVlbiB3YWl0aW5nIGZvciB5b3UgZm9yIG5lYXJseSBmaWZ0eSB5ZWFycy4ifV19LCB7ImsiOiAibGluZSIsICJuIjogIkFVUkVMSVVTIiwgInBhcnRzIjogW3sicCI6ICJzdHJhaW5pbmcgYWdhaW5zdCB0aGUgcm9wZXMifSwgeyJkIjogIkRvIHlvdXIgd29yc3QsIGzigJlPbG9ubmFpcy4gQnV0IGlmIGFueXRoaW5nIGhhcHBlbnMgdG8gaGltLCBJIHdpbGwgaHVudCB5b3UgZG93bi4gRXZlcnkgcG9ydC4gRXZlcnkgc2VhLiJ9XX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJM4oCZT2xvbm5haXMgc3R1ZGllcyBoaW0sIGFsbW9zdCBhbXVzZWQuIn0sIHsiayI6ICJsaW5lIiwgIm4iOiAiTOKAmU9MT05OQUlTIiwgInBhcnRzIjogW3siZCI6ICJUaGUgc2VhIGhhcyBubyBlbmQsIGJveS4ifSwgeyJwIjogInRvIGhpcyBtZW4ifSwgeyJkIjogIktpbGwgdGhpcyBvbmUuIFRocm93IHRoZSBjYXB0YWluIGludG8gdGhlIGRlZXAuIn1dfSwgeyJrIjogImFjdGlvbiIsICJ0IjogIkEgQk9BUkRFUiBkcmF3cyBhIGtuaWZlIGFuZCBkcml2ZXMgaXQgaW50byBBdXJlbGl1c+KAmXMgc3RvbWFjaC4gQXVyZWxpdXMgZ2FzcHMgYW5kIHNhZ3MgYWdhaW5zdCB0aGUgcm9wZXMuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJCbGFja2JlYXJkIHJvYXJzIGFuZCBmaWdodHMgaGlzIGJvbmRzIGFzIGZvdXIgbWVuIGN1dCBoaW0gZnJvbSB0aGUgbWFzdCwgZHJhZyBoaW0gdG8gdGhlIHJhaWwgYW5kIGhlYXZlIGhpbSBvdmVyIHRoZSBzaWRlLiBBIGhlYXZ5IFNQTEFTSC4gVGhlbiBub3RoaW5nLiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiTOKAmU9sb25uYWlzIHRvdWNoZXMgYSB0b3JjaCB0byBhIGZ1c2UgdGhhdCBzbmFrZXMgZG93biBpbnRvIHRoZSBwb3dkZXIgbWFnYXppbmUuIEhlIHN0ZXBzIGJhY2sgYWJvYXJkIHRoZSBNYXJpZ29sZCB3aXRob3V0IGxvb2tpbmcgYmFjay4ifSwgeyJrIjogImxpbmUiLCAibiI6ICJM4oCZT0xPTk5BSVMiLCAicGFydHMiOiBbeyJkIjogIkJ1cm4gaGVyLiJ9XX0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJUaGUgTWFyaWdvbGQgY3V0cyBoZXIgbGluZXMgYW5kIHNsaXBzIGF3YXkgaW50byB0aGUgZGFyay4ifSwgeyJrIjogInNjZW5lIiwgInQiOiAiRVhULiBRVUVFTiBBTk5F4oCZUyBSRVZFTkdFIOKAkyBNQUlOIERFQ0sg4oCTIENPTlRJTlVPVVMifSwgeyJrIjogImFjdGlvbiIsICJ0IjogIlRoZSBmdXNlIGhpc3NlcyB0b3dhcmQgdGhlIGhhdGNoLiBCbGVlZGluZywgQXVyZWxpdXMgdHdpc3RzIG9uZSBoYW5kIGZyZWUgb2YgdGhlIGxvb3NlbmVkIHJvcGVzLiJ9LCB7ImsiOiAiZ2FtZSIsICJ0IjogIlN1cnZpdmFsIHNlcXVlbmNlLiBTdHJ1Z2dsZSBmcmVlLCB0aGVuIGNyYXdsIHRvd2FyZCB0aGUgcmFpbCBhcyB0aGUgZnVzZSBidXJucyBkb3duLiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiSGlzIGZpbmdlcnMgcmVhY2ggdGhlIHJhaWwuIFRvbyBsYXRlLiJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiVGhlIFFVRUVOIEFOTkXigJlTIFJFVkVOR0UgZXhwbG9kZXMuIEEgcGlsbGFyIG9mIGZpcmUgdGVhcnMgdGhlIG5pZ2h0IGFwYXJ0LCBhbmQgYnVybmluZyB0aW1iZXIgcmFpbnMgZG93biBhY3Jvc3MgdGhlIHdhdGVyLiJ9LCB7ImsiOiAic2NlbmUiLCAidCI6ICJFWFQuIE9QRU4gU0VBIOKAkyBOSUdIVCJ9LCB7ImsiOiAiYWN0aW9uIiwgInQiOiAiU2lsZW5jZS4gV3JlY2thZ2UgYnVybnMgb24gYmxhY2sgd2F0ZXIuIFNtb2tlIGRyaWZ0cyBsb3cgb3ZlciB0aGUgd2F2ZXMuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJUaGUgY2FtZXJhIGdsaWRlcyBhY3Jvc3MgdGhlIGRlYnJpc+KApiBhbmQgc3RvcHMuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJBIGhhbmQgYnJlYWtzIHRoZSBzdXJmYWNlIGFuZCBncmFicyBob2xkIG9mIGEgYnJva2VuIHNwYXIuIn0sIHsiayI6ICJhY3Rpb24iLCAidCI6ICJUaGUgY2FtZXJhIHJpc2VzIGludG8gdGhlIHNreSwgYWJvdmUgdGhlIHNtb2tlIGFuZCB0aGUgZmlyZSwgdW50aWwgdGhlIGVuZGxlc3Mgc2VhIGZpbGxzIHRoZSBmcmFtZS4ifSwgeyJrIjogImNlbnRlciIsICJ0IjogIklORklOSVRFIEFTVVJFIiwgImkiOiBmYWxzZSwgImIiOiB0cnVlLCAiYmlnIjogdHJ1ZX0sIHsiayI6ICJzcGFjZSJ9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiRU5EIE9GIFBST0xPR1VFIiwgImkiOiBmYWxzZSwgImIiOiB0cnVlLCAiYmlnIjogZmFsc2V9LCB7ImsiOiAiY2VudGVyIiwgInQiOiAiTmV4dDogQ2hhcHRlciAxIOKAkyBUaGUgUmV0dXJuIG9mIHRoZSBQaXJhdGUiLCAiaSI6IHRydWUsICJiIjogZmFsc2UsICJiaWciOiBmYWxzZX1d";
+  var rd=document.getElementById('reader'), sc=document.getElementById('reader-scroll'), art=document.getElementById('script'),
+      meter=document.getElementById('reader-meter'), closeBtn=document.getElementById('reader-close'), built=false, last=null;
+  function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function build(){
+    var json; try{ var bin=atob(DATA), bytes=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); json=JSON.parse(new TextDecoder().decode(bytes)); }catch(e){ art.textContent='The prologue could not be opened.'; return; }
+    var h='<div class="title"><b>Infinite Asure</b><span>Prologue: Fire on the Water</span><small>Story by Abhay &#183; Third draft</small></div>';
+    json.forEach(function(b){
+      if(b.k==='scene') h+='<p class="scene">'+esc(b.t)+'</p>';
+      else if(b.k==='action') h+='<p>'+esc(b.t)+'</p>';
+      else if(b.k==='raw') h+='<p'+(b.b?' class="scene"':'')+'>'+esc(b.t)+'</p>';
+      else if(b.k==='space') h+='<p></p>';
+      else if(b.k==='center') h+='<p class="center" style="'+(b.i?'font-style:italic;':'')+(b.b?'font-weight:700;':'')+(b.big?'font-size:1.6em;letter-spacing:.08em;margin-top:1em;':'')+'">'+esc(b.t)+'</p>';
+      else if(b.k==='trans') h+='<p class="trans">'+esc(b.t)+'</p>';
+      else if(b.k==='game') h+='<p class="gp"><b>GAMEPLAY:</b> <i>'+esc(b.t)+'</i></p>';
+      else if(b.k==='line'){ h+='<p class="cue">'+esc(b.n)+'</p>';
+        b.parts.forEach(function(x,i){ var last=i===b.parts.length-1;
+          if(x.p!==undefined) h+='<p class="par">('+esc(x.p)+')</p>'; else h+='<p class="dia'+(last?'':' mid')+'">'+esc(x.d)+'</p>'; }); }
+    });
+    h+='<p class="copy">&#169; 2026 Infinite Asure. All rights reserved. This script may not be copied, reproduced or redistributed.</p>';
+    art.innerHTML=h; built=true;
+  }
+  function open(e){ if(e) e.preventDefault(); last=document.activeElement; if(!built) build(); rd.hidden=false; document.body.style.overflow='hidden'; sc.scrollTop=0; meter.style.transform='scaleX(0)'; closeBtn.focus(); }
+  function close(){ rd.hidden=true; document.body.style.overflow=''; if(last&&last.focus) last.focus(); }
+  [].forEach.call(document.querySelectorAll('[data-read-prologue]'),function(b){ b.addEventListener('click',open); });
+  closeBtn.addEventListener('click',close);
+  sc.addEventListener('scroll',function(){ var m=sc.scrollHeight-sc.clientHeight; meter.style.transform='scaleX('+(m>0?sc.scrollTop/m:0)+')'; },{passive:true});
+  function block(e){ if(!rd.hidden && rd.contains(e.target)) e.preventDefault(); }
+  ['copy','cut','contextmenu','dragstart','selectstart'].forEach(function(t){ document.addEventListener(t,block); });
+  document.addEventListener('keydown',function(e){
+    if(rd.hidden) return;
+    if(e.key==='Escape'){ close(); return; }
+    var k=(e.key||'').toLowerCase();
+    if((e.ctrlKey||e.metaKey)&&['c','x','s','p','a','u'].indexOf(k)>-1) e.preventDefault();
+  });
+})();
+
 /* ---------------- plates lightbox ---------------- */
 (function(){
-  var lb=document.getElementById('lightbox'),img=document.getElementById('lb-img'),cap=document.getElementById('lb-cap'),closeBtn=document.getElementById('lb-close'),last=null;
-  function open(b){ last=b; img.src=b.dataset.src; img.alt=b.dataset.cap; cap.textContent=b.dataset.cap; lb.hidden=false; closeBtn.focus(); }
+  var lb=document.getElementById('lightbox'),img=document.getElementById('lb-img'),cap=document.getElementById('lb-cap'),closeBtn=document.getElementById('lb-close'),
+      plates=[].slice.call(document.querySelectorAll('.plate')),idx=0,last=null,tx=null;
+  function show(i){ idx=(i+plates.length)%plates.length; var b=plates[idx]; img.src=b.dataset.src; img.alt=b.dataset.cap;
+    cap.innerHTML='<span class="lb-count">'+(idx+1)+' / '+plates.length+'</span>'; cap.appendChild(document.createTextNode(b.dataset.cap)); }
+  function open(i){ last=plates[i]; show(i); lb.hidden=false; closeBtn.focus(); }
   function close(){ lb.hidden=true; img.src=''; if(last) last.focus(); }
-  [].forEach.call(document.querySelectorAll('.plate'),function(b){ b.addEventListener('click',function(){ open(b); }); });
+  plates.forEach(function(b,i){ b.addEventListener('click',function(){ open(i); }); });
   closeBtn.addEventListener('click',close);
+  document.getElementById('lb-prev').addEventListener('click',function(){ show(idx-1); });
+  document.getElementById('lb-next').addEventListener('click',function(){ show(idx+1); });
   lb.addEventListener('click',function(e){ if(e.target===lb) close(); });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!lb.hidden) close(); });
+  lb.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; },{passive:true});
+  lb.addEventListener('touchend',function(e){ if(tx===null) return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50) show(idx+(dx<0?1:-1)); tx=null; });
+  document.addEventListener('keydown',function(e){ if(lb.hidden) return;
+    if(e.key==='Escape') close(); else if(e.key==='ArrowRight') show(idx+1); else if(e.key==='ArrowLeft') show(idx-1); });
+})();
+
+/* ---------------- sticky nav, progress, active section, mobile menu ---------------- */
+(function(){
+  var nav=document.querySelector('.nav'), bar=document.getElementById('progress'), tg=document.getElementById('nav-toggle'), queued=false;
+  function upd(){ queued=false; var y=window.scrollY, max=document.documentElement.scrollHeight-innerHeight;
+    nav.classList.toggle('scrolled',y>40); bar.style.transform='scaleX('+(max>0?Math.min(1,y/max):0)+')'; }
+  addEventListener('scroll',function(){ if(!queued){ queued=true; requestAnimationFrame(upd); } },{passive:true}); upd();
+  function setOpen(o){ nav.classList.toggle('open',o); tg.setAttribute('aria-expanded',o); tg.setAttribute('aria-label',o?'Close menu':'Open menu'); }
+  tg.addEventListener('click',function(){ setOpen(!nav.classList.contains('open')); });
+  [].forEach.call(nav.querySelectorAll('ul a'),function(a){ a.addEventListener('click',function(){ setOpen(false); }); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+  var links={}; [].forEach.call(nav.querySelectorAll('ul a'),function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){
+      for(var k in links) links[k].removeAttribute('aria-current');
+      var id=e.target.id==='crew'?'crew':e.target.id; if(links[id]) links[id].setAttribute('aria-current','true'); } }); },{rootMargin:'-45% 0px -50% 0px'});
+    ['story','isle','articles','play','plates','devlog','crew'].forEach(function(id){ var el=document.getElementById(id); if(el) io.observe(el); });
+  }
+})();
+
+/* ---------------- banner parallax ---------------- */
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var b=document.querySelector('.banner'), ship=b&&b.querySelector('.banner-ship'), q=b&&b.querySelector('blockquote'), queued=false;
+  if(!b) return;
+  function upd(){ queued=false; var r=b.getBoundingClientRect(), k=(r.top+r.height/2-innerHeight/2)/innerHeight;
+    if(r.bottom<0||r.top>innerHeight) return;
+    ship.style.translate=(k*-60)+'px '+(k*30)+'px'; q.style.transform='translateY('+(k*40)+'px)'; }
+  addEventListener('scroll',function(){ if(!queued){ queued=true; requestAnimationFrame(upd); } },{passive:true}); upd();
 })();
 </script>
 </body>
